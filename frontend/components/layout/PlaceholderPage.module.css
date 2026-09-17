@@ -1,0 +1,29 @@
+.section {
+  width: 100%;
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 2rem max(1rem, env(safe-area-inset-right)) 3rem max(1rem, env(safe-area-inset-left));
+}
+
+.title {
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: hsl(var(--primary));
+}
+
+.description {
+  margin-top: 0.75rem;
+  max-width: 36rem;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: hsl(var(--secondary));
+}
+
+@media (min-width: 64rem) {
+  .section {
+    padding-left: max(1.5rem, env(safe-area-inset-left));
+    padding-right: max(1.5rem, env(safe-area-inset-right));
+  }
+}

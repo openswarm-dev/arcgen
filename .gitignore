@@ -1,0 +1,23 @@
+# dependencies
+node_modules/
+
+# env (keep examples)
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# next.js
+frontend/.next/
+frontend/out/
+frontend/build/
+
+# logs & OS
+*.log
+.DS_Store
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo

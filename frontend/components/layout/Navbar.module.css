@@ -1,0 +1,198 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: var(--site-header-h);
+}
+
+.bar {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: hsl(var(--background));
+}
+
+.border {
+  position: absolute;
+  inset: auto 0 0;
+  height: 1px;
+  background: hsl(var(--border));
+}
+
+.inner {
+  position: relative;
+  width: 100%;
+  padding: 0 max(1rem, env(safe-area-inset-right)) 0 max(1rem, env(safe-area-inset-left));
+}
+
+.nav {
+  position: relative;
+  display: flex;
+  height: var(--site-header-h);
+  align-items: center;
+  gap: 1rem;
+}
+
+.mobileLogo {
+  display: flex;
+  align-items: center;
+  color: hsl(var(--primary));
+}
+
+.mobileLogoMark {
+  display: flex;
+  width: 2rem;
+  height: 2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: hsl(var(--card));
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.searchWrap {
+  pointer-events: none;
+  position: absolute;
+  left: 50%;
+  display: none;
+  width: min(560px, calc(100% - 2rem));
+  transform: translateX(-50%);
+}
+
+.searchBox {
+  pointer-events: auto;
+  display: flex;
+  height: 2.75rem;
+  align-items: center;
+  border-radius: 9999px;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--background));
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.searchIconWrap {
+  display: flex;
+  width: 1.75rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: flex-end;
+  padding-left: 0.75rem;
+}
+
+.searchIcon {
+  width: 1rem;
+  height: 1rem;
+  color: hsl(var(--secondary));
+}
+
+.searchInput {
+  height: 2.5rem;
+  min-width: 0;
+  flex: 1;
+  border: 0;
+  background: transparent;
+  padding: 0 1rem 0 0.25rem;
+  font-size: 0.875rem;
+  line-height: 1rem;
+  color: hsl(var(--primary));
+  outline: none;
+}
+
+.searchInput::placeholder {
+  color: hsl(var(--secondary));
+}
+
+.actions {
+  display: flex;
+  margin-left: auto;
+  align-items: center;
+  gap: 0.375rem;
+  flex-shrink: 0;
+}
+
+.primaryButton,
+.secondaryButton,
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.primaryButton {
+  padding: 0.5rem 1rem;
+  background: hsl(var(--primary));
+  color: hsl(var(--background));
+}
+
+.primaryButton:hover {
+  background: hsl(var(--primary-hover));
+}
+
+.walletSlot {
+  position: relative;
+  display: none;
+}
+
+@media (min-width: 64rem) {
+  .walletSlot {
+    display: block;
+  }
+}
+
+.walletSlotConnected {
+  display: block;
+}
+
+.iconButton {
+  width: 2.25rem;
+  height: 2.25rem;
+  color: hsl(var(--primary));
+}
+
+.iconButton:hover {
+  background: hsl(var(--card));
+}
+
+.menuIcon {
+  width: 1rem;
+  height: 1rem;
+}
+
+@media (min-width: 64rem) {
+  .mobileLogo,
+  .iconButton {
+    display: none;
+  }
+
+  .searchWrap {
+    display: block;
+  }
+}
+
+@media (min-width: 64rem) {
+  .inner {
+    padding: 0 max(1.5rem, env(safe-area-inset-right)) 0 max(1.5rem, env(safe-area-inset-left));
+  }
+}
+
+@media (max-width: 24rem) {
+  .primaryButton {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  .nav {
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 20rem) {
+  .primaryButton {
+    padding: 0.5rem 0.625rem;
+  }
+}

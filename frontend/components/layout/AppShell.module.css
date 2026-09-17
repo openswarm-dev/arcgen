@@ -1,0 +1,77 @@
+.shell {
+  display: flex;
+  height: 100svh;
+  max-height: 100svh;
+  overflow: hidden;
+}
+
+.mainColumn {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100svh;
+  max-height: 100svh;
+  overflow: hidden;
+}
+
+.content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.content::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.pageSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 0 max(1rem, env(safe-area-inset-right)) 0 max(1rem, env(safe-area-inset-left));
+}
+
+.hero {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.warpWrap {
+  width: 100%;
+  max-width: 56rem;
+  padding: 0 0.25rem;
+}
+
+.warpSurface {
+  width: 100%;
+  height: clamp(180px, 44vw, 320px);
+  min-height: 180px;
+}
+
+@media (min-width: 40rem) {
+  .warpSurface {
+    height: clamp(220px, 38vw, 320px);
+  }
+}
+
+@media (min-width: 64rem) {
+  .pageSection {
+    padding-left: max(1.5rem, env(safe-area-inset-left));
+    padding-right: max(1.5rem, env(safe-area-inset-right));
+  }
+}

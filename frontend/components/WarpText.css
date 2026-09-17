@@ -1,0 +1,24 @@
+.warp-text {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-height: 180px;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: inherit;
+  touch-action: manipulation;
+}
+
+@media (min-width: 40rem) {
+  .warp-text {
+    min-height: 220px;
+  }
+}
+
+.warp-text canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}

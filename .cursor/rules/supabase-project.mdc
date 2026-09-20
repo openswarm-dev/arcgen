@@ -1,0 +1,15 @@
+---
+description: Supabase project for this repo
+alwaysApply: true
+---
+
+# Supabase project
+
+This repo uses the **social app** Supabase project, not sugarskulls.
+
+- Name: `social app`
+- Ref: `aevyflsboufozdpnidgv`
+- URL: `https://aevyflsboufozdpnidgv.supabase.co`
+- Region: `eu-central-1`
+
+Link with `supabase link --project-ref aevyflsboufozdpnidgv`. Auth is email + password with a Resend PIN, not wallet-first.

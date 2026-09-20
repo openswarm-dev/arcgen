@@ -133,18 +133,8 @@
   background: hsl(var(--primary-hover));
 }
 
-.walletSlot {
+.authSlot {
   position: relative;
-  display: none;
-}
-
-@media (min-width: 64rem) {
-  .walletSlot {
-    display: block;
-  }
-}
-
-.walletSlotConnected {
   display: block;
 }
 

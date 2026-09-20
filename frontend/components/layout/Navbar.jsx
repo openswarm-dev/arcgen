@@ -2,16 +2,13 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useWallet } from '@solana/wallet-adapter-react';
-import ConnectWallet from '../wallet/ConnectWallet';
+import AuthButton from '../auth/AuthButton';
 import MobileMenu from './MobileMenu';
 import { MenuIcon, SearchIcon } from './icons';
 import styles from './Navbar.module.css';
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { connected, publicKey } = useWallet();
-  const isConnected = connected && Boolean(publicKey);
 
   return (
     <>
@@ -47,8 +44,8 @@ export default function Navbar() {
               <Link href="/launch" className={styles.primaryButton}>
                 Launch
               </Link>
-              <div className={`${styles.walletSlot} ${isConnected ? styles.walletSlotConnected : ''}`}>
-                <ConnectWallet />
+              <div className={styles.authSlot}>
+                <AuthButton />
               </div>
               <button
                 type="button"

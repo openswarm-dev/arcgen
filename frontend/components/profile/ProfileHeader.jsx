@@ -83,11 +83,13 @@ export default function ProfileHeader({
         <div className={styles.identity}>
           <h1 className={styles.name}>{profile?.displayName || (isOwner ? 'Your profile' : 'Profile')}</h1>
           <p className={styles.handle}>
-            {wallet
-              ? truncateAddress(wallet, 4)
-              : isOwner
-                ? 'Connect a wallet to add your handles'
-                : ''}
+            {profile?.displayName
+              ? `@${String(profile.displayName).replace(/\s+/g, '').toLowerCase()}`
+              : wallet
+                ? truncateAddress(wallet, 4)
+                : isOwner
+                  ? 'Your public profile'
+                  : ''}
           </p>
           {profile?.bio ? (
             <p className={styles.bio}>{profile.bio}</p>

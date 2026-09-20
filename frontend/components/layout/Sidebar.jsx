@@ -7,6 +7,7 @@ import { motion } from 'motion/react';
 import { CollapseIcon } from './icons';
 import { useLayout } from './LayoutContext';
 import { isNavItemActive, NAV_ITEMS } from './navItems';
+import { useSupabase } from '../providers/SupabaseProvider';
 import styles from './Sidebar.module.css';
 
 const COLLAPSED_WIDTH = 80;
@@ -15,7 +16,10 @@ const EXPANDED_WIDTH = 275;
 export default function Sidebar() {
   const pathname = usePathname();
   const { collapsed, restoreSidebar, toggleCollapsed } = useLayout();
+  const { user } = useSupabase();
   const [wide, setWide] = useState(false);
+  const accountName = user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'Guest';
+  const accountHandle = user?.email || 'Not signed in';
 
   useEffect(() => {
     const media = window.matchMedia('(min-width: 80rem)');
@@ -74,10 +78,10 @@ export default function Sidebar() {
         </div>
 
         <Link href="/profile" aria-label="Open profile" data-sidenav-account="" className={styles.accountLink}>
-          <span className={styles.accountAvatar}>J</span>
+          <span className={styles.accountAvatar}>{(accountName || 'J').charAt(0).toUpperCase()}</span>
           <span data-sidenav-label="" className={styles.accountMeta}>
-            <span className={styles.accountName}>jowenrat</span>
-            <span className={styles.accountHandle}>@jowenrat</span>
+            <span className={styles.accountName}>{accountName}</span>
+            <span className={styles.accountHandle}>{accountHandle}</span>
           </span>
         </Link>
       </div>

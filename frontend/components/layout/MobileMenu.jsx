@@ -3,16 +3,17 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useWallet } from '@solana/wallet-adapter-react';
-import ConnectWallet from '../wallet/ConnectWallet';
+import AuthButton from '../auth/AuthButton';
+import { useSupabase } from '../providers/SupabaseProvider';
 import { SearchIcon } from './icons';
 import { isNavItemActive, NAV_ITEMS } from './navItems';
 import styles from './MobileMenu.module.css';
 
 export default function MobileMenu({ open, onClose }) {
   const pathname = usePathname();
-  const { connected, publicKey } = useWallet();
-  const isConnected = connected && Boolean(publicKey);
+  const { user } = useSupabase();
+  const accountName = user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'Guest';
+  const accountHandle = user?.email || 'Log in to continue';
 
   useEffect(() => {
     if (!open) return undefined;
@@ -103,14 +104,19 @@ export default function MobileMenu({ open, onClose }) {
         </nav>
 
         <div className={styles.footer}>
-          {!isConnected ? <ConnectWallet variant="menu" /> : null}
-          <Link href="/profile" className={styles.accountLink} onClick={onClose}>
-            <span className={styles.accountAvatar}>J</span>
-            <span className={styles.accountMeta}>
-              <div className={styles.accountName}>jowenrat</div>
-              <div className={styles.accountHandle}>@jowenrat</div>
-            </span>
-          </Link>
+          {!user ? (
+            <div onClick={onClose}>
+              <AuthButton variant="menu" />
+            </div>
+          ) : (
+            <Link href="/profile" className={styles.accountLink} onClick={onClose}>
+              <span className={styles.accountAvatar}>{(accountName || 'J').charAt(0).toUpperCase()}</span>
+              <span className={styles.accountMeta}>
+                <div className={styles.accountName}>{accountName}</div>
+                <div className={styles.accountHandle}>{accountHandle}</div>
+              </span>
+            </Link>
+          )}
         </div>
       </aside>
     </>

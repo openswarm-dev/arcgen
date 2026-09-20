@@ -2,11 +2,12 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { useWallet } from '@solana/wallet-adapter-react';
 
 import { fetchProfile, fetchProfileSources, saveProfile } from '@/lib/api';
 import { fileToDataUrl } from '@/lib/image';
 import { useLayout } from '@/components/layout/LayoutContext';
+import { useAuthOverlay } from '@/components/providers/AuthOverlayProvider';
+import { useSupabase } from '@/components/providers/SupabaseProvider';
 import styles from '@/components/layout/AppShell.module.css';
 import HandleEditor from './HandleEditor';
 import ProfileHeader from './ProfileHeader';
@@ -15,8 +16,8 @@ import SourceFeed from './SourceFeed';
 import profileStyles from './ProfilePage.module.css';
 
 export default function ProfilePage({ walletAddress } = {}) {
-  const { connected, publicKey } = useWallet();
-  const sessionWallet = connected && publicKey ? publicKey.toBase58() : null;
+  const { user, session, isLoading: authLoading } = useSupabase();
+  const { openAuth } = useAuthOverlay();
   const { minimizeSidebar, restoreSidebar } = useLayout();
 
   const [profile, setProfile] = useState(null);
@@ -29,13 +30,13 @@ export default function ProfilePage({ walletAddress } = {}) {
   const [expanded, setExpanded] = useState(null);
   const mainRef = useRef(null);
 
-  const isOwner = Boolean(sessionWallet && profile?.wallet && sessionWallet === profile.wallet);
-  const viewWallet = profile?.wallet || walletAddress || sessionWallet;
+  const isOwner = Boolean(user && profile?.id && user.id === profile.id);
+  const viewWallet = profile?.wallet || walletAddress || '';
 
-  const loadSources = useCallback(async address => {
+  const loadSources = useCallback(async query => {
     setSourcesLoading(true);
     try {
-      const data = await fetchProfileSources(address);
+      const data = await fetchProfileSources(query);
       setSources(data.sources || []);
     } catch {
       setSources([]);
@@ -45,18 +46,25 @@ export default function ProfilePage({ walletAddress } = {}) {
   }, []);
 
   const loadProfile = useCallback(
-    async address => {
+    async query => {
       setLoading(true);
       setError('');
       try {
-        const nextProfile = await fetchProfile(address);
+        const nextProfile = await fetchProfile(query);
         setProfile(nextProfile);
-        await loadSources(nextProfile?.wallet || address);
+        await loadSources(
+          nextProfile?.id
+            ? { userId: nextProfile.id }
+            : nextProfile?.wallet
+              ? { wallet: nextProfile.wallet }
+              : query
+        );
       } catch (loadError) {
         setError(loadError.message || 'Could not load profile');
-        if (address) {
+        if (query?.wallet || query?.me) {
           setProfile({
-            wallet: address,
+            id: query.userId || null,
+            wallet: query.wallet || '',
             displayName: '',
             bio: '',
             avatarUrl: '',
@@ -78,18 +86,22 @@ export default function ProfilePage({ walletAddress } = {}) {
     setExpanded(null);
 
     if (walletAddress) {
-      loadProfile(walletAddress);
+      loadProfile({ wallet: walletAddress });
       return undefined;
     }
 
-    if (sessionWallet) {
-      loadProfile(sessionWallet);
+    if (authLoading) {
+      return undefined;
+    }
+
+    if (user && session?.access_token) {
+      loadProfile({ me: true, accessToken: session.access_token });
       return undefined;
     }
 
     loadProfile();
     return undefined;
-  }, [walletAddress, sessionWallet, loadProfile]);
+  }, [walletAddress, user, session, authLoading, loadProfile]);
 
   useEffect(() => {
     if (!expanded) return undefined;
@@ -106,18 +118,18 @@ export default function ProfilePage({ walletAddress } = {}) {
   }, [expanded, restoreSidebar]);
 
   const handleSave = async payload => {
-    if (!sessionWallet || !isOwner) return;
+    if (!user || !isOwner || !session?.access_token) return;
 
     setSaving(true);
     setSaved(false);
     setError('');
 
     try {
-      const nextProfile = await saveProfile({ wallet: sessionWallet, ...payload });
+      const nextProfile = await saveProfile(payload, session.access_token);
       setProfile(nextProfile);
       setSaved(true);
       window.setTimeout(() => setSaved(false), 2000);
-      await loadSources(sessionWallet);
+      await loadSources({ userId: nextProfile.id || user.id });
     } catch (saveError) {
       setError(saveError.message || 'Could not save profile');
     } finally {
@@ -126,7 +138,7 @@ export default function ProfilePage({ walletAddress } = {}) {
   };
 
   const handleImageFile = async (kind, file) => {
-    if (!sessionWallet || !isOwner || !profile) return;
+    if (!user || !isOwner || !profile) return;
 
     try {
       const dataUrl = await fileToDataUrl(file, kind);
@@ -210,7 +222,10 @@ export default function ProfilePage({ walletAddress } = {}) {
             </AnimatePresence>
           ) : (
             <div className={profileStyles.empty}>
-              Connect a wallet in the header to create your profile and attach social handles.
+              <p>Log in to create your profile and attach social handles.</p>
+              <button type="button" className={profileStyles.loginButton} onClick={() => openAuth('signup')}>
+                Create account
+              </button>
             </div>
           )}
         </div>

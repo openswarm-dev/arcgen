@@ -12,6 +12,7 @@ import {
 } from './lib/profiles.js';
 import { getProfileSources } from './lib/sources.js';
 import { getWalletBalance, isValidSolanaAddress } from './wallet.js';
+import { startKeepalive } from './lib/keepalive.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -205,4 +206,8 @@ app.get('/api/profile/sources', async (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
+
+  if (process.env.RENDER) {
+    startKeepalive();
+  }
 });

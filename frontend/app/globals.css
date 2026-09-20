@@ -26,6 +26,7 @@
   --color-popover-foreground: hsl(var(--popover-foreground));
   --animate-marquee: marquee var(--duration) infinite linear;
   --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
+  --animate-marquee-diagonal: marquee-diagonal var(--duration) linear infinite;
   --font-heading: var(--font-geist-sans);
   --font-sans: var(--font-geist-sans);
   --radius-sm: calc(var(--radius) * 0.6);
@@ -52,6 +53,15 @@
   }
   to {
     transform: translateY(calc(-100% - var(--gap)));
+  }
+}
+
+@keyframes marquee-diagonal {
+  from {
+    transform: translate3d(0, -50%, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
   }
 }
 

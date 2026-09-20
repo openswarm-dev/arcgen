@@ -83,7 +83,7 @@
 .searchIcon {
   width: 1rem;
   height: 1rem;
-  color: hsl(var(--secondary));
+  color: hsl(var(--foreground));
 }
 
 .searchInput {
@@ -100,7 +100,7 @@
 }
 
 .searchInput::placeholder {
-  color: hsl(var(--secondary));
+  color: hsl(var(--foreground));
 }
 
 .actions {

@@ -86,7 +86,7 @@
 
 .brandHandle {
   font-size: 0.875rem;
-  color: hsl(var(--secondary));
+  color: hsl(var(--foreground));
 }
 
 .closeButton {
@@ -132,7 +132,7 @@
 .searchIcon {
   width: 1rem;
   height: 1rem;
-  color: hsl(var(--secondary));
+  color: hsl(var(--foreground));
 }
 
 .searchInput {
@@ -149,7 +149,7 @@
 }
 
 .searchInput::placeholder {
-  color: hsl(var(--secondary));
+  color: hsl(var(--foreground));
 }
 
 .navList {
@@ -262,7 +262,7 @@
 
 .accountHandle {
   font-size: 0.875rem;
-  color: hsl(var(--secondary));
+  color: hsl(var(--foreground));
 }
 
 @media (min-width: 64rem) {

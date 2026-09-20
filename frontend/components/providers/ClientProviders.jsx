@@ -2,11 +2,14 @@
 
 import SupabaseProvider from './SupabaseProvider';
 import SolanaWalletProvider from '../wallet/SolanaWalletProvider';
+import { LayoutProvider } from '../layout/LayoutContext';
 
 export default function ClientProviders({ children }) {
   return (
-    <SupabaseProvider>
-      <SolanaWalletProvider>{children}</SolanaWalletProvider>
-    </SupabaseProvider>
+    <LayoutProvider>
+      <SupabaseProvider>
+        <SolanaWalletProvider>{children}</SolanaWalletProvider>
+      </SupabaseProvider>
+    </LayoutProvider>
   );
 }

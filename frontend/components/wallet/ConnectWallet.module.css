@@ -38,7 +38,7 @@
 .chevron {
   width: 0.875rem;
   height: 0.875rem;
-  color: hsl(var(--secondary));
+  color: hsl(var(--foreground));
   transition: transform 0.15s ease;
 }
 
@@ -67,7 +67,7 @@
 .menuTitle {
   font-size: 0.8125rem;
   font-weight: 600;
-  color: hsl(var(--secondary));
+  color: hsl(var(--primary));
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -86,14 +86,14 @@
 .balanceUsd {
   margin-top: 0.25rem;
   font-size: 0.875rem;
-  color: hsl(var(--secondary));
+  color: hsl(var(--primary) / 0.75);
 }
 
 .balanceLoading,
 .balanceError {
   margin-top: 0.75rem;
   font-size: 0.875rem;
-  color: hsl(var(--secondary));
+  color: hsl(var(--foreground) / 0.75);
 }
 
 .menuBody {
@@ -129,7 +129,7 @@
   width: 1rem;
   height: 1rem;
   flex-shrink: 0;
-  color: hsl(var(--secondary));
+  color: hsl(var(--foreground) / 0.75);
 }
 
 .menuItemDanger .menuItemIcon {
@@ -173,7 +173,7 @@
   padding: 1rem;
   font-size: 0.875rem;
   line-height: 1.5;
-  color: hsl(var(--secondary));
+  color: hsl(var(--foreground));
 }
 
 .emptyState a {

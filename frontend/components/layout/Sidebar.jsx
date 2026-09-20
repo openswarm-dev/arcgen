@@ -2,36 +2,43 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { CollapseIcon, LogoIcon } from './icons';
-import { NAV_ITEMS } from './navItems';
+import { usePathname } from 'next/navigation';
+import { motion } from 'motion/react';
+import { CollapseIcon } from './icons';
+import { useLayout } from './LayoutContext';
+import { isNavItemActive, NAV_ITEMS } from './navItems';
 import styles from './Sidebar.module.css';
 
+const COLLAPSED_WIDTH = 80;
+const EXPANDED_WIDTH = 275;
+
 export default function Sidebar() {
-  const [collapsed, setCollapsed] = useState(false);
+  const pathname = usePathname();
+  const { collapsed, restoreSidebar, toggleCollapsed } = useLayout();
+  const [wide, setWide] = useState(false);
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem('sidenav-collapsed');
-      if (stored === '1') setCollapsed(true);
-    } catch {
-      // ignore storage errors
-    }
+    const media = window.matchMedia('(min-width: 80rem)');
+    const onChange = () => setWide(media.matches);
+    onChange();
+    media.addEventListener('change', onChange);
+    return () => media.removeEventListener('change', onChange);
   }, []);
 
-  const toggleCollapsed = () => {
-    setCollapsed(current => {
-      const next = !current;
-      try {
-        localStorage.setItem('sidenav-collapsed', next ? '1' : '0');
-      } catch {
-        // ignore storage errors
-      }
-      return next;
-    });
-  };
+  useEffect(() => {
+    restoreSidebar();
+  }, [pathname, restoreSidebar]);
+
+  const minimized = collapsed || !wide;
 
   return (
-    <div className={`${styles.rail} ${collapsed ? styles.collapsed : ''}`} data-sidenav-rail="">
+    <motion.div
+      className={`${styles.rail} ${collapsed ? styles.collapsed : ''}`}
+      data-sidenav-rail=""
+      initial={false}
+      animate={{ width: minimized ? COLLAPSED_WIDTH : EXPANDED_WIDTH }}
+      transition={{ type: 'spring', stiffness: 320, damping: 34 }}
+    >
       <div className={styles.panel} data-sidenav-panel="">
         <div>
           <Link href="/" className={styles.logoLink} aria-label="jowenrat - home">
@@ -42,18 +49,19 @@ export default function Sidebar() {
             <ul className={styles.navList}>
               {NAV_ITEMS.map(item => {
                 const Icon = item.icon;
+                const active = isNavItemActive(item.href, pathname);
                 return (
                   <li key={item.href}>
                     <Link
                       href={item.href}
                       title={item.label}
-                      aria-current={item.active ? 'page' : undefined}
-                      className={`${styles.navLink} ${item.active ? styles.navLinkActive : ''}`}
+                      aria-current={active ? 'page' : undefined}
+                      className={`${styles.navLink} ${active ? styles.navLinkActive : ''}`}
                     >
                       <Icon className={styles.navIcon} />
                       <span
                         data-sidenav-label=""
-                        className={`${styles.navLabel} ${item.active ? styles.navLabelActive : ''}`}
+                        className={`${styles.navLabel} ${active ? styles.navLabelActive : ''}`}
                       >
                         {item.label}
                       </span>
@@ -65,21 +73,13 @@ export default function Sidebar() {
           </nav>
         </div>
 
-        <a
-          href="https://x.com"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="jowenrat on X"
-          data-sidenav-account=""
-          className={styles.accountLink}
-        >
+        <Link href="/profile" aria-label="Open profile" data-sidenav-account="" className={styles.accountLink}>
           <span className={styles.accountAvatar}>J</span>
           <span data-sidenav-label="" className={styles.accountMeta}>
             <span className={styles.accountName}>jowenrat</span>
             <span className={styles.accountHandle}>@jowenrat</span>
           </span>
-          <LogoIcon className={styles.accountX} />
-        </a>
+        </Link>
       </div>
 
       <button
@@ -92,6 +92,6 @@ export default function Sidebar() {
       >
         <CollapseIcon className={styles.collapseIcon} />
       </button>
-    </div>
+    </motion.div>
   );
 }

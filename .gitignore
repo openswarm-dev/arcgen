@@ -16,6 +16,9 @@ frontend/build/
 *.log
 .DS_Store
 
+# local profile store when Supabase is not configured
+server/data/profiles.json
+
 # vercel
 .vercel
 

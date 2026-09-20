@@ -2,13 +2,15 @@
 
 import { useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useWallet } from '@solana/wallet-adapter-react';
 import ConnectWallet from '../wallet/ConnectWallet';
-import { LogoIcon, SearchIcon } from './icons';
-import { NAV_ITEMS } from './navItems';
+import { SearchIcon } from './icons';
+import { isNavItemActive, NAV_ITEMS } from './navItems';
 import styles from './MobileMenu.module.css';
 
 export default function MobileMenu({ open, onClose }) {
+  const pathname = usePathname();
   const { connected, publicKey } = useWallet();
   const isConnected = connected && Boolean(publicKey);
 
@@ -80,16 +82,17 @@ export default function MobileMenu({ open, onClose }) {
           <ul className={styles.navList}>
             {NAV_ITEMS.map(item => {
               const Icon = item.icon;
+              const active = isNavItemActive(item.href, pathname);
               return (
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    aria-current={item.active ? 'page' : undefined}
-                    className={`${styles.navLink} ${item.active ? styles.navLinkActive : ''}`}
+                    aria-current={active ? 'page' : undefined}
+                    className={`${styles.navLink} ${active ? styles.navLinkActive : ''}`}
                     onClick={onClose}
                   >
                     <Icon className={styles.navIcon} />
-                    <span className={`${styles.navLabel} ${item.active ? styles.navLabelActive : ''}`}>
+                    <span className={`${styles.navLabel} ${active ? styles.navLabelActive : ''}`}>
                       {item.label}
                     </span>
                   </Link>
@@ -101,20 +104,13 @@ export default function MobileMenu({ open, onClose }) {
 
         <div className={styles.footer}>
           {!isConnected ? <ConnectWallet variant="menu" /> : null}
-          <a
-            href="https://x.com"
-            target="_blank"
-            rel="noreferrer"
-            className={styles.accountLink}
-            onClick={onClose}
-          >
+          <Link href="/profile" className={styles.accountLink} onClick={onClose}>
             <span className={styles.accountAvatar}>J</span>
             <span className={styles.accountMeta}>
               <div className={styles.accountName}>jowenrat</div>
               <div className={styles.accountHandle}>@jowenrat</div>
             </span>
-            <LogoIcon className={styles.closeIcon} />
-          </a>
+          </Link>
         </div>
       </aside>
     </>

@@ -14,6 +14,14 @@ export function HomeIcon({ className }) {
   );
 }
 
+export function ProfileIcon({ className }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" className={className}>
+      <path d="M12 3.5a4.25 4.25 0 100 8.5 4.25 4.25 0 000-8.5zM4.75 19.15C5.2 16.18 8.2 14 12 14s6.8 2.18 7.25 5.15c.07.48.12.9.12 1.35H4.63c0-.45.05-.87.12-1.35z" />
+    </svg>
+  );
+}
+
 export function SearchIcon({ className }) {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" className={className}>

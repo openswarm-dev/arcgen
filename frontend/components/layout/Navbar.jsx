@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import AuthButton from '../auth/AuthButton';
+import BrandLogo from '../brand/BrandLogo';
 import MobileMenu from './MobileMenu';
 import { MenuIcon, SearchIcon } from './icons';
 import styles from './Navbar.module.css';
@@ -18,8 +19,8 @@ export default function Navbar() {
 
         <div className={styles.inner}>
           <nav className={styles.nav}>
-            <Link href="/" className={styles.mobileLogo} aria-label="jowenrat - home">
-              <span className={styles.mobileLogoMark}>J</span>
+            <Link href="/" className={styles.mobileLogo} aria-label="F33D - home">
+              <BrandLogo className={styles.mobileLogoMark} />
             </Link>
 
             <div className={styles.searchWrap}>

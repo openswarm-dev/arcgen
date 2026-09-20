@@ -18,7 +18,7 @@ export default function ProfileHeader({
   const avatarRef = useRef(null);
   const bannerRef = useRef(null);
   const connectedCount = profile ? PROFILE_PLATFORMS.filter(platform => profile.handles?.[platform.id]).length : 0;
-  const initial = (profile?.displayName || 'J').trim().charAt(0).toUpperCase();
+  const initial = (profile?.displayName || 'F').trim().charAt(0).toUpperCase();
 
   return (
     <aside className={styles.rail}>
@@ -53,7 +53,7 @@ export default function ProfileHeader({
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={profile.avatarUrl} alt="" className={styles.avatarImage} />
               ) : (
-                <span>{wallet ? initial : 'J'}</span>
+                <span>{wallet ? initial : 'F'}</span>
               )}
               <span className={styles.changeLabel}>Edit</span>
             </button>
@@ -63,7 +63,7 @@ export default function ProfileHeader({
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={profile.avatarUrl} alt="" className={styles.avatarImage} />
               ) : (
-                wallet ? initial : 'J'
+                wallet ? initial : 'F'
               )}
             </span>
           )}

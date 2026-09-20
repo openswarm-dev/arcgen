@@ -62,16 +62,12 @@
 }
 
 .brandMark {
-  display: flex;
-  width: 2.5rem;
-  height: 2.5rem;
+  display: block;
+  height: 2.35rem;
+  width: auto;
+  max-width: 4.5rem;
   flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  border-radius: 9999px;
-  background: hsl(var(--card));
-  font-size: 0.9375rem;
-  font-weight: 700;
+  object-fit: contain;
 }
 
 .brandText {

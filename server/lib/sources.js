@@ -417,7 +417,7 @@ async function fetchX(platform, handle) {
 }
 
 async function fetchReddit(platform, handle) {
-  const headers = { 'User-Agent': 'jowenrat-profile/1.0 (by u/jowenrat)' };
+  const headers = { 'User-Agent': 'F33D-profile/1.0' };
   const about = await fetchJson(`https://www.reddit.com/user/${encodeURIComponent(handle)}/about.json`, { headers });
   const listing = await fetchJson(
     `https://www.reddit.com/user/${encodeURIComponent(handle)}/submitted.json?limit=8`,

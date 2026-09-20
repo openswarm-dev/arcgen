@@ -48,17 +48,11 @@
 }
 
 .logoMark {
-  display: flex;
-  width: 2.75rem;
-  height: 2.75rem;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  border-radius: 9999px;
-  background: hsl(var(--card));
-  font-size: 1.125rem;
-  font-weight: 700;
-  letter-spacing: -0.04em;
+  display: block;
+  height: 2.35rem;
+  width: auto;
+  max-width: 4.25rem;
+  object-fit: contain;
 }
 
 .navList {

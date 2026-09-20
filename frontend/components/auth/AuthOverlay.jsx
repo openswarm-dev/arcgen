@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 
 import { registerAccount, sendAuthPin, verifyAuthPin } from '@/lib/api';
+import BrandLogo from '@/components/brand/BrandLogo';
 import { useSupabase } from '@/components/providers/SupabaseProvider';
 import styles from './AuthOverlay.module.css';
 
@@ -225,7 +226,7 @@ export default function AuthOverlay({ open, mode, onModeChange, onClose }) {
               </svg>
             </button>
 
-            <div className={styles.mark}>J</div>
+            <BrandLogo className={styles.mark} />
             <AnimatePresence mode="wait">
               {step === 'pin' ? (
                 <motion.form

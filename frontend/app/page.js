@@ -7,7 +7,7 @@ export default function Home() {
       <div className={styles.hero}>
         <div className={styles.warpWrap}>
           <WarpText
-            text="jowenrat"
+            text="F33D"
             color="#f8f5ff"
             warpStrength={0.08}
             warpScale={1.7}

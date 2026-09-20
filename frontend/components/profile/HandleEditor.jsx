@@ -51,7 +51,7 @@ export default function HandleEditor({ profile, saving, error, saved, onSave }) 
               className={styles.input}
               value={displayName}
               onChange={event => setDisplayName(event.target.value)}
-              placeholder="jowenrat"
+              placeholder="F33D"
               maxLength={48}
             />
           </label>

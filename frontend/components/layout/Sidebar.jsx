@@ -8,6 +8,7 @@ import { CollapseIcon } from './icons';
 import { useLayout } from './LayoutContext';
 import { isNavItemActive, NAV_ITEMS } from './navItems';
 import { useSupabase } from '../providers/SupabaseProvider';
+import BrandLogo from '../brand/BrandLogo';
 import styles from './Sidebar.module.css';
 
 const COLLAPSED_WIDTH = 80;
@@ -45,8 +46,8 @@ export default function Sidebar() {
     >
       <div className={styles.panel} data-sidenav-panel="">
         <div>
-          <Link href="/" className={styles.logoLink} aria-label="jowenrat - home">
-            <span className={styles.logoMark}>J</span>
+          <Link href="/" className={styles.logoLink} aria-label="F33D - home">
+            <BrandLogo className={styles.logoMark} />
           </Link>
 
           <nav aria-label="Primary">
@@ -78,7 +79,7 @@ export default function Sidebar() {
         </div>
 
         <Link href="/profile" aria-label="Open profile" data-sidenav-account="" className={styles.accountLink}>
-          <span className={styles.accountAvatar}>{(accountName || 'J').charAt(0).toUpperCase()}</span>
+          <span className={styles.accountAvatar}>{(accountName || 'F').charAt(0).toUpperCase()}</span>
           <span data-sidenav-label="" className={styles.accountMeta}>
             <span className={styles.accountName}>{accountName}</span>
             <span className={styles.accountHandle}>{accountHandle}</span>

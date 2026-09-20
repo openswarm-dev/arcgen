@@ -59,8 +59,8 @@ function pinEmailHtml(pin) {
           <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:420px;background:#141414;border:1px solid #242428;border-radius:24px;padding:36px 32px;">
             <tr>
               <td>
-                <div style="width:40px;height:40px;border-radius:999px;background:#fafafa;color:#0a0a0a;font-weight:700;text-align:center;line-height:40px;">J</div>
-                <h1 style="margin:24px 0 8px;font-size:22px;letter-spacing:-0.03em;">Your verification code</h1>
+                <img src="https://insta-template-frontend.onrender.com/logo/FeedLogo1.png" alt="F33D" width="96" style="display:block;height:auto;margin:0;" />
+                <h1 style="margin:24px 0 8px;font-size:22px;letter-spacing:-0.03em;">Your F33D verification code</h1>
                 <p style="margin:0 0 28px;color:#a1a1aa;font-size:14px;line-height:1.6;">Enter this pin to finish setting up your account. It expires in 10 minutes.</p>
                 <div style="letter-spacing:0.4em;font-size:32px;font-weight:700;text-align:center;padding:18px 0;border-radius:16px;background:#0a0a0a;border:1px solid #242428;">${pin}</div>
                 <p style="margin:28px 0 0;color:#71717a;font-size:12px;line-height:1.5;">If you did not request this, you can ignore the email.</p>

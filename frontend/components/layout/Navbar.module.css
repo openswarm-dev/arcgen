@@ -40,15 +40,11 @@
 }
 
 .mobileLogoMark {
-  display: flex;
-  width: 2rem;
+  display: block;
   height: 2rem;
-  align-items: center;
-  justify-content: center;
-  border-radius: 9999px;
-  background: hsl(var(--card));
-  font-size: 0.875rem;
-  font-weight: 700;
+  width: auto;
+  max-width: 4.75rem;
+  object-fit: contain;
 }
 
 .searchWrap {

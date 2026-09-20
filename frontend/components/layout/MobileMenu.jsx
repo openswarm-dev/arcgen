@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import AuthButton from '../auth/AuthButton';
+import BrandLogo from '../brand/BrandLogo';
 import { useSupabase } from '../providers/SupabaseProvider';
 import { SearchIcon } from './icons';
 import { isNavItemActive, NAV_ITEMS } from './navItems';
@@ -51,10 +52,10 @@ export default function MobileMenu({ open, onClose }) {
       >
         <div className={styles.header}>
           <Link href="/" className={styles.brand} onClick={onClose}>
-            <span className={styles.brandMark}>J</span>
+            <BrandLogo className={styles.brandMark} />
             <span className={styles.brandText}>
-              <span className={styles.brandName}>jowenrat</span>
-              <span className={styles.brandHandle}>@jowenrat</span>
+              <span className={styles.brandName}>F33D</span>
+              <span className={styles.brandHandle}>@f33d</span>
             </span>
           </Link>
           <button type="button" aria-label="Close menu" className={styles.closeButton} onClick={onClose}>
@@ -110,7 +111,7 @@ export default function MobileMenu({ open, onClose }) {
             </div>
           ) : (
             <Link href="/profile" className={styles.accountLink} onClick={onClose}>
-              <span className={styles.accountAvatar}>{(accountName || 'J').charAt(0).toUpperCase()}</span>
+              <span className={styles.accountAvatar}>{(accountName || 'F').charAt(0).toUpperCase()}</span>
               <span className={styles.accountMeta}>
                 <div className={styles.accountName}>{accountName}</div>
                 <div className={styles.accountHandle}>{accountHandle}</div>

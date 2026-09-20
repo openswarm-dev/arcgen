@@ -14,8 +14,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: 'jowenrat',
-  description: 'WarpText demo',
+  title: {
+    default: 'F33D',
+    template: '%s · F33D',
+  },
+  description: 'F33D — streams, clips, and launches.',
+  applicationName: 'F33D',
+  icons: {
+    icon: [{ url: '/logo/FeedLogo1.png', type: 'image/png' }],
+    apple: '/logo/FeedLogo1.png',
+  },
 };
 
 export const viewport = {

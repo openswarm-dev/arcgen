@@ -7,8 +7,8 @@ import { getPublicApiBase } from './publicUrl.js';
 const PRESETS_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'presets');
 
 const PRESET_REFERENCE_VIDEOS = {
-  'hotel-lobby': 'hotel-lobby.mp4',
-  'on-the-radar': 'on-the-radar.mp4',
+  'hotel-lobby': 'hotel-lobby-motion.mp4',
+  'on-the-radar': 'on-the-radar-motion.mp4',
 };
 
 export function getPresetReferenceVideoPath(presetId) {

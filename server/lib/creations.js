@@ -3,7 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import { isValidSolanaAddress } from '../wallet.js';
-import { DEFAULT_SWAP_VIDEO_MODEL, DEFAULT_VIDEO_MODEL } from './openrouter.js';
+import { DEFAULT_VIDEO_MODEL } from './openrouter.js';
 import { getSupabaseAdmin, isSupabaseConfigured } from './supabase.js';
 import { normalizeWan3Params } from './wan3.js';
 import {
@@ -146,6 +146,28 @@ export function buildOpenRouterInputReferences(creation) {
   return refs;
 }
 
+export function buildWanReferenceMedia(creation) {
+  const media = [];
+
+  if (creation.referenceVideoUrl) {
+    media.push({ type: 'reference_video', url: creation.referenceVideoUrl });
+  }
+
+  const imageRefs = (creation.referenceMedia || [])
+    .filter(item => item.type === 'reference_image')
+    .sort((a, b) => (a.index || 0) - (b.index || 0));
+
+  for (const item of imageRefs) {
+    media.push({ type: 'reference_image', url: item.url });
+  }
+
+  if (!imageRefs.length && creation.referenceImageUrl) {
+    media.push({ type: 'reference_image', url: creation.referenceImageUrl });
+  }
+
+  return media;
+}
+
 async function persistReferenceFile(id, kind, buffer, contentType, index = null) {
   const extension =
     kind === 'video' ? 'mp4' : imageExtension(contentType);
@@ -254,8 +276,8 @@ export async function createCreation({
       { type: 'reference_image', url: imageAUrl, index: 1 },
       { type: 'reference_image', url: imageBUrl, index: 2 },
     ];
-    row.model = DEFAULT_SWAP_VIDEO_MODEL;
-    row.provider = 'openrouter';
+    row.model = process.env.DASHSCOPE_VIDEO_MODEL || 'wan3.0-video';
+    row.provider = 'dashscope';
   } else {
     const image = parseDataImage(characterImage);
     if (!image) {

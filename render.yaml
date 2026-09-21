@@ -35,8 +35,8 @@ services:
         sync: false
       - key: OPENROUTER_API_KEY
         sync: false
-      - key: OPENROUTER_SWAP_MODEL
-        value: bytedance/seedance-2.0
+      - key: DASHSCOPE_API_KEY
+        sync: false
       - key: HELIUS_RPC_URL
         sync: false
       - key: RESEND_API_KEY

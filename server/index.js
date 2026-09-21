@@ -251,11 +251,19 @@ app.get('/api/profile/sources', async (req, res) => {
 
 app.post('/api/creations', async (req, res) => {
   try {
-    if (!isOpenRouterConfigured()) {
+    if (!isOpenRouterConfigured() && !isDashScopeConfigured()) {
       return res.status(503).json({ error: 'Video generation is not configured yet' });
     }
 
     const inputMode = req.body?.inputMode || 'simple';
+    if (inputMode === 'swap' && !isDashScopeConfigured()) {
+      return res.status(503).json({
+        error: 'Character swap requires DashScope. Add DASHSCOPE_API_KEY on the server.',
+      });
+    }
+    if (inputMode !== 'swap' && !isOpenRouterConfigured()) {
+      return res.status(503).json({ error: 'Video generation is not configured yet' });
+    }
 
     const creation = await createCreation({
       wallet: req.body?.wallet,

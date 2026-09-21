@@ -25,7 +25,7 @@ import {
   readLocalCreationReferenceVideo,
   readLocalCreationReferenceImage,
 } from './lib/creations.js';
-import { isDashScopeConfigured } from './lib/dashscope.js';
+import { isAtlasCloudConfigured } from './lib/atlascloud.js';
 import { isOpenRouterConfigured } from './lib/openrouter.js';
 import { queueCreationGeneration } from './lib/generationWorker.js';
 import { readPresetReferenceVideo } from './lib/presets.js';
@@ -54,8 +54,8 @@ app.get('/api/health', async (_req, res) => {
     openrouter: {
       configured: isOpenRouterConfigured(),
     },
-    dashscope: {
-      configured: isDashScopeConfigured(),
+    atlascloud: {
+      configured: isAtlasCloudConfigured(),
     },
     creations: {
       store: creationStoreMode(),
@@ -251,14 +251,14 @@ app.get('/api/profile/sources', async (req, res) => {
 
 app.post('/api/creations', async (req, res) => {
   try {
-    if (!isOpenRouterConfigured() && !isDashScopeConfigured()) {
+    if (!isOpenRouterConfigured() && !isAtlasCloudConfigured()) {
       return res.status(503).json({ error: 'Video generation is not configured yet' });
     }
 
     const inputMode = req.body?.inputMode || 'simple';
-    if (inputMode === 'swap' && !isDashScopeConfigured()) {
+    if (inputMode === 'swap' && !isAtlasCloudConfigured()) {
       return res.status(503).json({
-        error: 'Character swap requires DashScope. Add DASHSCOPE_API_KEY on the server.',
+        error: 'Character swap requires Atlas Cloud. Add ATLASCLOUD_API_KEY on the server.',
       });
     }
     if (inputMode !== 'swap' && !isOpenRouterConfigured()) {

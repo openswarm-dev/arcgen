@@ -276,8 +276,8 @@ export async function createCreation({
       { type: 'reference_image', url: imageAUrl, index: 1 },
       { type: 'reference_image', url: imageBUrl, index: 2 },
     ];
-    row.model = process.env.DASHSCOPE_VIDEO_MODEL || 'wan3.0-video';
-    row.provider = 'dashscope';
+    row.model = process.env.ATLASCLOUD_VIDEO_MODEL || 'alibaba/wan-3.0/reference-to-video';
+    row.provider = 'atlascloud';
   } else {
     const image = parseDataImage(characterImage);
     if (!image) {

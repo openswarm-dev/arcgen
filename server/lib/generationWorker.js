@@ -1,15 +1,15 @@
 import {
-  buildWanReferenceMedia,
   getCreationById,
   persistCreationVideo,
   updateCreation,
 } from './creations.js';
 import {
-  downloadWanVideo,
-  isDashScopeConfigured,
-  pollWanTask,
-  submitWanReferenceGeneration,
-} from './dashscope.js';
+  buildAtlasRefers,
+  downloadAtlasVideo,
+  isAtlasCloudConfigured,
+  pollAtlasPrediction,
+  submitAtlasVideoGeneration,
+} from './atlascloud.js';
 import {
   downloadVideoContent,
   getVideoContentUrl,
@@ -37,30 +37,31 @@ function assertPublicReferenceUrls(references) {
   }
 }
 
-async function runDashScopeGeneration(creationId, creation) {
-  if (!isDashScopeConfigured()) {
-    throw new Error('Character swap requires DashScope. Add DASHSCOPE_API_KEY on the server.');
+async function runAtlasCloudGeneration(creationId, creation) {
+  if (!isAtlasCloudConfigured()) {
+    throw new Error('Character swap requires Atlas Cloud. Add ATLASCLOUD_API_KEY on the server.');
   }
 
-  const media = buildWanReferenceMedia(creation);
-  if (media.length < 3) {
+  const refers = buildAtlasRefers(creation);
+  if (refers.length < 3) {
     throw new Error('Missing reference video or character photos for swap generation');
   }
 
-  assertPublicReferenceUrls(media);
+  assertPublicReferenceUrls(refers);
 
-  const job = await submitWanReferenceGeneration({
+  const job = await submitAtlasVideoGeneration({
     prompt: creation.prompt,
-    media,
+    refers,
     duration: creation.duration,
     resolution: creation.resolution,
     aspectRatio: creation.aspectRatio,
     model: creation.model,
+    audio: true,
   });
 
   await updateCreation(creationId, {
     status: 'processing',
-    providerJobId: job.taskId,
+    providerJobId: job.predictionId,
   });
 
   for (let attempt = 0; attempt < MAX_POLL_ATTEMPTS; attempt += 1) {
@@ -68,20 +69,20 @@ async function runDashScopeGeneration(creationId, creation) {
       await sleep(POLL_INTERVAL_MS);
     }
 
-    const latest = await pollWanTask(job.taskId);
-    const taskStatus = latest?.output?.task_status || latest?.task_status;
+    const latest = await pollAtlasPrediction(job.predictionId);
+    const taskStatus = latest?.data?.status;
 
-    if (taskStatus === 'FAILED' || taskStatus === 'CANCELED' || taskStatus === 'UNKNOWN') {
-      throw new Error(latest?.output?.message || latest?.message || `Generation ${taskStatus}`);
+    if (taskStatus === 'failed') {
+      throw new Error(latest?.data?.error || 'Generation failed');
     }
 
-    if (taskStatus === 'SUCCEEDED') {
-      const outputUrl = latest?.output?.video_url;
+    if (taskStatus === 'completed' || taskStatus === 'succeeded') {
+      const outputUrl = latest?.data?.outputs?.[0];
       if (!outputUrl) {
-        throw new Error('DashScope completed without a video URL');
+        throw new Error('Atlas Cloud completed without a video URL');
       }
 
-      const { buffer, contentType } = await downloadWanVideo(outputUrl);
+      const { buffer, contentType } = await downloadAtlasVideo(outputUrl);
       const videoUrl = await persistCreationVideo(creationId, buffer, contentType);
 
       await updateCreation(creationId, {
@@ -152,6 +153,14 @@ async function runOpenRouterGeneration(creationId, creation) {
   throw new Error('Video generation timed out. Try again in a moment.');
 }
 
+function usesAtlasCloud(creation) {
+  return (
+    creation.inputMode === 'swap' ||
+    creation.provider === 'atlascloud' ||
+    creation.provider === 'dashscope'
+  );
+}
+
 export async function runCreationGeneration(creationId) {
   const creation = await getCreationById(creationId);
   if (!creation || creation.status === 'completed' || creation.status === 'failed') {
@@ -159,8 +168,8 @@ export async function runCreationGeneration(creationId) {
   }
 
   try {
-    if (creation.inputMode === 'swap' || creation.provider === 'dashscope') {
-      await runDashScopeGeneration(creationId, creation);
+    if (usesAtlasCloud(creation)) {
+      await runAtlasCloudGeneration(creationId, creation);
       return;
     }
 

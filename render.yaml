@@ -35,7 +35,7 @@ services:
         sync: false
       - key: OPENROUTER_API_KEY
         sync: false
-      - key: DASHSCOPE_API_KEY
+      - key: ATLASCLOUD_API_KEY
         sync: false
       - key: HELIUS_RPC_URL
         sync: false

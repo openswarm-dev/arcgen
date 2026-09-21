@@ -11,6 +11,7 @@ import {
   hasPresetReferenceVideo,
 } from './presets.js';
 import { getPublicApiBase } from './publicUrl.js';
+import { ensureWalletProfile } from './profiles.js';
 
 const DATA_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'data');
 const DATA_PATH = path.join(DATA_DIR, 'creations.json');
@@ -197,6 +198,8 @@ export async function createCreation({
   if (!isValidSolanaAddress(wallet)) {
     throw Object.assign(new Error('Connect your wallet to create'), { status: 400 });
   }
+
+  await ensureWalletProfile(wallet);
 
   const trimmedPrompt = String(prompt || '').trim();
   if (trimmedPrompt.length < 8) {

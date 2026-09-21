@@ -166,6 +166,16 @@
   color: hsl(var(--muted-foreground));
 }
 
+.metaLink {
+  color: inherit;
+  text-decoration: none;
+}
+
+.metaLink:hover {
+  color: hsl(var(--foreground));
+  text-decoration: underline;
+}
+
 @media (min-width: 64rem) {
   .page {
     padding-top: 2rem;

@@ -5,13 +5,15 @@ import {
   DocsIcon,
   ExploreIcon,
   HomeIcon,
-  LaunchIcon
+  LaunchIcon,
+  ProfileIcon,
 } from './icons';
 
 export const NAV_ITEMS = [
   { href: '/', label: 'Home', icon: HomeIcon },
   { href: '/create', label: 'Create', icon: LaunchIcon },
   { href: '/explore', label: 'Explore', icon: ExploreIcon },
+  { href: '/profile', label: 'Profile', icon: ProfileIcon },
   { href: '/components', label: 'Components', icon: ComponentsIcon },
   { href: '/docs', label: 'Docs', icon: DocsIcon }
 ];

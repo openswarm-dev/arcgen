@@ -114,7 +114,9 @@ export default function ExploreFeed() {
               <div className={styles.cardBody}>
                 <p className={styles.prompt}>{item.title || item.prompt}</p>
                 <div className={styles.meta}>
-                  <span>{truncateAddress(item.wallet, 4)}</span>
+                  <Link href={`/profile/${item.wallet}`} className={styles.metaLink}>
+                    {truncateAddress(item.wallet, 4)}
+                  </Link>
                   <span>{item.aspectRatio}</span>
                   <span>{item.duration}s</span>
                   {item.createdAt ? (

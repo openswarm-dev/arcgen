@@ -8,6 +8,26 @@ import { normalizeHandles } from './platforms.js';
 
 const DATA_PATH = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'data', 'profiles.json');
 
+function walletDisplayName(wallet) {
+  if (!wallet) return '';
+  return `${wallet.slice(0, 4)}...${wallet.slice(-4)}`;
+}
+
+function publicWalletProfile(row) {
+  if (!row) return null;
+
+  return {
+    id: row.wallet_address,
+    wallet: row.wallet_address,
+    displayName: row.display_name || walletDisplayName(row.wallet_address),
+    bio: row.bio || '',
+    avatarUrl: row.avatar_url || '',
+    bannerUrl: row.banner_url || '',
+    handles: {},
+    updatedAt: row.updated_at || null,
+  };
+}
+
 function publicProfile(row) {
   if (!row) {
     return null;
@@ -97,6 +117,20 @@ export async function getProfileByWallet(wallet) {
   const supabase = getSupabaseAdmin();
   if (supabase) {
     try {
+      const { data: walletProfile, error: walletError } = await supabase
+        .from('wallet_profiles')
+        .select('*')
+        .eq('wallet_address', wallet)
+        .maybeSingle();
+
+      if (walletError) {
+        throw walletError;
+      }
+
+      if (walletProfile) {
+        return publicWalletProfile(walletProfile);
+      }
+
       const { data, error } = await supabase
         .from('creator_profiles')
         .select('*')
@@ -114,8 +148,55 @@ export async function getProfileByWallet(wallet) {
   }
 
   const all = await readFileStore();
-  const match = Object.values(all).find(row => row.wallet_address === wallet);
+  const match = all[`wallet:${wallet}`] || Object.values(all).find(row => row.wallet_address === wallet);
+  if (match?.wallet_address && !match.user_id) {
+    return publicWalletProfile(match);
+  }
   return publicProfile(match) || emptyProfile(null, wallet);
+}
+
+export async function ensureWalletProfile(wallet) {
+  if (!isValidSolanaAddress(wallet)) {
+    throw Object.assign(new Error('Invalid Solana address'), { status: 400 });
+  }
+
+  const existing = await getProfileByWallet(wallet);
+  if (existing?.updatedAt) {
+    return existing;
+  }
+
+  const next = {
+    wallet_address: wallet,
+    display_name: walletDisplayName(wallet),
+    updated_at: new Date().toISOString(),
+  };
+
+  const supabase = getSupabaseAdmin();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('wallet_profiles')
+        .upsert(next, { onConflict: 'wallet_address' })
+        .select('*')
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      return publicWalletProfile(data);
+    } catch (error) {
+      console.warn('Supabase wallet profile write failed, using file store:', error.message);
+    }
+  }
+
+  const all = await readFileStore();
+  all[`wallet:${wallet}`] = {
+    ...next,
+    created_at: all[`wallet:${wallet}`]?.created_at || next.updated_at,
+  };
+  await writeFileStore(all);
+  return publicWalletProfile(all[`wallet:${wallet}`]);
 }
 
 export async function upsertProfile({ userId, wallet, displayName, bio, handles, avatarUrl, bannerUrl }) {

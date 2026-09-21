@@ -26,6 +26,15 @@ export function ExploreIcon({ className }) {
   return <SearchIcon className={className} />;
 }
 
+export function ProfileIcon({ className }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" className={className}>
+      <circle cx="12" cy="8" r="4" />
+      <path d="M5 20c1.5-3.5 4.5-5 7-5s5.5 1.5 7 5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export function ComponentsIcon({ className }) {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" className={className}>

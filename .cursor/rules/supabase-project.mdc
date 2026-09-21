@@ -1,15 +1,13 @@
----
-description: Supabase project for this repo
-alwaysApply: true
----
-
 # Supabase project
 
-This repo uses the **social app** Supabase project, not sugarskulls.
+This repo uses the **arcgen** Supabase project.
 
-- Name: `social app`
-- Ref: `aevyflsboufozdpnidgv`
-- URL: `https://aevyflsboufozdpnidgv.supabase.co`
-- Region: `eu-central-1`
+- Name: `arcgen`
+- Ref: `nbuanplvfreoascjstbl`
+- URL: `https://nbuanplvfreoascjstbl.supabase.co`
+- Region: `eu-west-1`
+- Org: social app (`vbietrmdkzrcwhjjwnvo`)
 
-Link with `supabase link --project-ref aevyflsboufozdpnidgv`. Auth is email + password with a Resend PIN, not wallet-first.
+Link with `supabase link --project-ref nbuanplvfreoascjstbl`.
+
+Wallet-connected users get a row in `wallet_profiles` on first generation. Generated videos and reference media upload to the public `creations` storage bucket.

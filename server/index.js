@@ -8,6 +8,7 @@ import {
   getProfileByWallet,
   getPublicProfile,
   profileStoreMode,
+  ensureWalletProfile,
   upsertProfile,
 } from './lib/profiles.js';
 import { getProfileSources } from './lib/sources.js';
@@ -180,6 +181,21 @@ app.get('/api/profile', async (req, res) => {
   } catch (error) {
     console.error('Profile fetch failed:', error);
     return res.status(error.status || 500).json({ error: error.message || 'Failed to load profile' });
+  }
+});
+
+app.post('/api/profile/wallet', async (req, res) => {
+  try {
+    const wallet = req.body?.wallet;
+    if (!isValidSolanaAddress(wallet)) {
+      return res.status(400).json({ error: 'Invalid Solana address' });
+    }
+
+    const profile = await ensureWalletProfile(wallet);
+    return res.json(profile);
+  } catch (error) {
+    console.error('Wallet profile ensure failed:', error);
+    return res.status(error.status || 500).json({ error: error.message || 'Failed to create profile' });
   }
 });
 

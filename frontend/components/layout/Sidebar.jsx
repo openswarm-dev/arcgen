@@ -83,11 +83,23 @@ export default function Sidebar() {
         </div>
 
         <div data-sidenav-account="" className={styles.accountLink}>
-          <span className={styles.accountAvatar}>{(accountName || 'F').charAt(0).toUpperCase()}</span>
-          <span data-sidenav-label="" className={styles.accountMeta}>
-            <span className={styles.accountName}>{accountName}</span>
-            <span className={styles.accountHandle}>{accountHandle}</span>
-          </span>
+          {address ? (
+            <Link href={`/profile/${address}`} className={styles.accountLinkInner}>
+              <span className={styles.accountAvatar}>{(accountName || 'F').charAt(0).toUpperCase()}</span>
+              <span data-sidenav-label="" className={styles.accountMeta}>
+                <span className={styles.accountName}>{accountName}</span>
+                <span className={styles.accountHandle}>{accountHandle}</span>
+              </span>
+            </Link>
+          ) : (
+            <>
+              <span className={styles.accountAvatar}>{(accountName || 'F').charAt(0).toUpperCase()}</span>
+              <span data-sidenav-label="" className={styles.accountMeta}>
+                <span className={styles.accountName}>{accountName}</span>
+                <span className={styles.accountHandle}>{accountHandle}</span>
+              </span>
+            </>
+          )}
         </div>
       </div>
 

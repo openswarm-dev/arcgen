@@ -49,6 +49,17 @@ export async function fetchMyCreations(wallet, { limit = 12 } = {}) {
   return api(`/api/creations?${params}`);
 }
 
+export async function fetchProfileByWallet(wallet) {
+  return api(`/api/profile?wallet=${encodeURIComponent(wallet)}`);
+}
+
+export async function ensureWalletProfile(wallet) {
+  return api('/api/profile/wallet', {
+    method: 'POST',
+    body: JSON.stringify({ wallet }),
+  });
+}
+
 export async function registerAccount({ email, password, displayName }) {
   return api('/api/auth/register', {
     method: 'POST',

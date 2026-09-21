@@ -28,6 +28,7 @@ import { isDashScopeConfigured } from './lib/dashscope.js';
 import { isOpenRouterConfigured } from './lib/openrouter.js';
 import { queueCreationGeneration } from './lib/generationWorker.js';
 import { readPresetReferenceVideo } from './lib/presets.js';
+import { getPublicApiBase, isLocalhostUrl } from './lib/publicUrl.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -57,6 +58,10 @@ app.get('/api/health', async (_req, res) => {
     },
     creations: {
       store: creationStoreMode(),
+    },
+    publicApi: {
+      base: getPublicApiBase(),
+      localhost: isLocalhostUrl(getPublicApiBase()),
     },
   };
 
@@ -370,6 +375,11 @@ app.get('/api/presets/:id/reference', async (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Public API base: ${getPublicApiBase()}`);
+
+  if (process.env.RENDER && isLocalhostUrl(getPublicApiBase())) {
+    console.warn('Public API base is localhost on Render. OpenRouter cannot fetch reference media.');
+  }
 
   if (process.env.RENDER) {
     startKeepalive();

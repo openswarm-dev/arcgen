@@ -10,18 +10,12 @@ import {
   getPresetReferenceVideoPublicUrl,
   hasPresetReferenceVideo,
 } from './presets.js';
+import { getPublicApiBase } from './publicUrl.js';
 
 const DATA_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'data');
 const DATA_PATH = path.join(DATA_DIR, 'creations.json');
 const VIDEO_DIR = path.join(DATA_DIR, 'videos');
 const REFERENCE_DIR = path.join(DATA_DIR, 'references');
-
-function getPublicApiBase() {
-  return (process.env.PUBLIC_API_URL || process.env.API_PUBLIC_URL || `http://localhost:${process.env.PORT || 3001}`).replace(
-    /\/$/,
-    ''
-  );
-}
 
 export function getCreationReferenceVideoPublicUrl(id) {
   return `${getPublicApiBase()}/api/creations/${id}/reference/video`;

@@ -12,6 +12,7 @@ import {
   pollVideoGeneration,
   submitVideoGeneration,
 } from './openrouter.js';
+import { isLocalhostUrl } from './publicUrl.js';
 
 const POLL_INTERVAL_MS = 12_000;
 const MAX_POLL_ATTEMPTS = 45;
@@ -34,6 +35,15 @@ async function runOpenRouterGeneration(creationId, creation) {
 
   if (isSwap && inputReferences.length < 3) {
     throw new Error('Missing reference video or character photos for swap generation');
+  }
+
+  for (const reference of inputReferences) {
+    const url = reference.video_url?.url || reference.image_url?.url;
+    if (url && isLocalhostUrl(url)) {
+      throw new Error(
+        'Reference media must use a public URL. Set PUBLIC_API_URL or deploy on Render with RENDER_EXTERNAL_URL available.'
+      );
+    }
   }
 
   const job = await submitVideoGeneration({

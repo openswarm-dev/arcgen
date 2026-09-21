@@ -34,24 +34,24 @@
 
 .logoLink {
   display: flex;
-  height: 4rem;
-  width: fit-content;
+  width: calc(100% + 1.5rem);
+  min-height: 5.5rem;
+  margin: 0 -0.75rem;
   align-items: center;
-  border-radius: 9999px;
-  padding: 0 3px;
+  justify-content: center;
+  padding: 0.85rem 0.4rem 0.5rem;
   color: hsl(var(--primary));
-  transition: background-color 0.15s ease;
 }
 
 .logoLink:hover {
-  background: hsl(var(--background-hover) / 0.4);
+  background: transparent;
 }
 
 .logoMark {
   display: block;
-  height: 2.35rem;
+  height: 4.7rem;
   width: auto;
-  max-width: 4.25rem;
+  max-width: calc(100% - 0.5rem);
   object-fit: contain;
 }
 

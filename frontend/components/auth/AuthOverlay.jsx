@@ -218,7 +218,6 @@ export default function AuthOverlay({ open, mode, onModeChange, onClose }) {
             exit={{ opacity: 0, y: 12, scale: 0.98 }}
             transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className={styles.glow} />
             <button type="button" className={styles.close} onClick={onClose} disabled={busy} aria-label="Close">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
                 <path d="M6 6l12 12" />

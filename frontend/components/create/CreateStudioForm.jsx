@@ -82,20 +82,23 @@ export default function CreateStudioForm({
   onCharacterBClear,
 }) {
   const isSwap = inputMode === 'swap';
+  const bakedReferenceVideo = Boolean(preset?.previewVideo);
 
   return (
     <div className={styles.form}>
       {isSwap ? (
         <>
-          <UploadSlot
-            label="Reference video"
-            preview={referenceVideoPreview}
-            previewType="video"
-            emptyLabel="Upload reference clip"
-            accept="video/mp4,video/quicktime"
-            onSelect={onReferenceVideoSelect}
-            onClear={onReferenceVideoClear}
-          />
+          {!bakedReferenceVideo ? (
+            <UploadSlot
+              label="Reference video"
+              preview={referenceVideoPreview}
+              previewType="video"
+              emptyLabel="Upload reference clip"
+              accept="video/mp4,video/quicktime"
+              onSelect={onReferenceVideoSelect}
+              onClear={onReferenceVideoClear}
+            />
+          ) : null}
           <UploadSlot
             label="Person A"
             preview={characterPreviewA}

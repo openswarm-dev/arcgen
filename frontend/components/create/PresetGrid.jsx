@@ -21,7 +21,20 @@ export default function PresetGrid({ onSelect }) {
             className={styles.tile}
             onClick={() => onSelect(preset)}
           >
-            <div className={styles.media} style={{ background: preset.accent }}>
+            <div
+              className={styles.media}
+              style={!preset.previewVideo ? { background: preset.accent } : undefined}
+            >
+              {preset.previewVideo ? (
+                <video
+                  className={styles.mediaVideo}
+                  src={preset.previewVideo}
+                  muted
+                  playsInline
+                  preload="metadata"
+                  aria-hidden="true"
+                />
+              ) : null}
               <div className={styles.mediaGlow} aria-hidden="true" />
               <div className={styles.mediaGrain} aria-hidden="true" />
 

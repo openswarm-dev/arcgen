@@ -27,6 +27,7 @@ import {
 import { isDashScopeConfigured } from './lib/dashscope.js';
 import { isOpenRouterConfigured } from './lib/openrouter.js';
 import { queueCreationGeneration } from './lib/generationWorker.js';
+import { readPresetReferenceVideo } from './lib/presets.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -254,6 +255,7 @@ app.post('/api/creations', async (req, res) => {
       characterImageA: req.body?.characterImageA,
       characterImageB: req.body?.characterImageB,
       referenceVideo: req.body?.referenceVideo,
+      presetId: req.body?.presetId,
     });
 
     queueCreationGeneration(creation.id);
@@ -357,6 +359,18 @@ app.get('/api/creations/:id/reference', async (req, res) => {
   } catch (error) {
     console.error('Serve creation reference failed:', error);
     return res.status(error.status || 500).json({ error: error.message || 'Failed to load reference image' });
+  }
+});
+
+app.get('/api/presets/:id/reference', async (req, res) => {
+  try {
+    const { buffer, contentType } = await readPresetReferenceVideo(req.params.id);
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    return res.send(buffer);
+  } catch (error) {
+    console.error('Serve preset reference failed:', error);
+    return res.status(error.status || 500).json({ error: error.message || 'Failed to load preset reference' });
   }
 });
 

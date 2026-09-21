@@ -6,6 +6,10 @@ import { isValidSolanaAddress } from '../wallet.js';
 import { DEFAULT_VIDEO_MODEL } from './openrouter.js';
 import { getSupabaseAdmin, isSupabaseConfigured } from './supabase.js';
 import { normalizeWan3Params } from './wan3.js';
+import {
+  getPresetReferenceVideoPublicUrl,
+  hasPresetReferenceVideo,
+} from './presets.js';
 
 const DATA_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'data');
 const DATA_PATH = path.join(DATA_DIR, 'creations.json');
@@ -186,6 +190,7 @@ export async function createCreation({
   characterImageA,
   characterImageB,
   referenceVideo,
+  presetId,
 }) {
   if (!isValidSolanaAddress(wallet)) {
     throw Object.assign(new Error('Connect your wallet to create'), { status: 400 });
@@ -214,18 +219,27 @@ export async function createCreation({
   };
 
   if (inputMode === 'swap') {
-    const video = parseDataVideo(referenceVideo);
     const imageA = parseDataImage(characterImageA);
     const imageB = parseDataImage(characterImageB);
 
-    if (!video) {
-      throw Object.assign(new Error('Upload a reference video'), { status: 400 });
-    }
     if (!imageA || !imageB) {
       throw Object.assign(new Error('Upload photos for both characters'), { status: 400 });
     }
 
-    row.reference_video_url = await persistReferenceFile(row.id, 'video', video.buffer, video.contentType);
+    const presetReferenceId = String(presetId || '').trim();
+    let referenceVideoUrl;
+
+    if (presetReferenceId && hasPresetReferenceVideo(presetReferenceId)) {
+      referenceVideoUrl = getPresetReferenceVideoPublicUrl(presetReferenceId);
+    } else {
+      const video = parseDataVideo(referenceVideo);
+      if (!video) {
+        throw Object.assign(new Error('Upload a reference video'), { status: 400 });
+      }
+      referenceVideoUrl = await persistReferenceFile(row.id, 'video', video.buffer, video.contentType);
+    }
+
+    row.reference_video_url = referenceVideoUrl;
     const imageAUrl = await persistReferenceFile(row.id, 'image', imageA.buffer, imageA.contentType, 1);
     const imageBUrl = await persistReferenceFile(row.id, 'image', imageB.buffer, imageB.contentType, 2);
 

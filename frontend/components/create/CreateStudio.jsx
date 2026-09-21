@@ -103,7 +103,11 @@ export default function CreateStudio({ preset = null, onBack }) {
 
   const isGenerating = creation && (creation.status === 'queued' || creation.status === 'processing');
   const videoUrl = resolveVideoUrl(creation?.videoUrl);
+  const presetPreviewVideo = preset?.previewVideo || '';
   const showPresetBackdrop = Boolean(preset && !videoUrl);
+  const hasBakedReference = Boolean(presetPreviewVideo);
+  const showOutputMedia =
+    !presetPreviewVideo || Boolean(videoUrl) || isGenerating || creation?.status === 'failed';
 
   const handleImageSelect = async (file, { setPreview, setData, maxBytes = MAX_IMAGE_BYTES, invalidMessage }) => {
     if (!file.type.startsWith('image/')) {
@@ -154,7 +158,12 @@ export default function CreateStudio({ preset = null, onBack }) {
     }
 
     if (isSwap) {
-      if (!referenceVideo || !characterImageA || !characterImageB) {
+      if (!characterImageA || !characterImageB) {
+        setError('Upload photos for both characters.');
+        return;
+      }
+
+      if (!hasBakedReference && !referenceVideo) {
         setError('Upload the reference video and both character photos.');
         return;
       }
@@ -175,7 +184,8 @@ export default function CreateStudio({ preset = null, onBack }) {
         characterImage: isSwap ? undefined : characterImage,
         characterImageA: isSwap ? characterImageA : undefined,
         characterImageB: isSwap ? characterImageB : undefined,
-        referenceVideo: isSwap ? referenceVideo : undefined,
+        referenceVideo: isSwap && !hasBakedReference ? referenceVideo : undefined,
+        presetId: isSwap && hasBakedReference ? preset.id : undefined,
         aspectRatio,
         duration,
         resolution: DEFAULT_RESOLUTION,
@@ -299,44 +309,50 @@ export default function CreateStudio({ preset = null, onBack }) {
         <aside className={styles.outputPanel}>
           <div
             className={styles.outputStage}
-            style={showPresetBackdrop ? { background: preset.accent } : undefined}
+            style={showPresetBackdrop && !presetPreviewVideo ? { background: preset.accent } : undefined}
           >
             {showPresetBackdrop ? (
               <>
+                {presetPreviewVideo ? (
+                  <video
+                    className={styles.outputBackdropVideo}
+                    src={presetPreviewVideo}
+                    muted
+                    playsInline
+                    preload="metadata"
+                    aria-hidden="true"
+                  />
+                ) : null}
                 <div className={styles.outputGlow} aria-hidden="true" />
                 <div className={styles.outputGrain} aria-hidden="true" />
               </>
             ) : null}
 
-            <div className={`${styles.outputMedia} ${previewAspectClass(aspectRatio)}`}>
-              {videoUrl ? (
-                <video className={styles.previewVideo} src={videoUrl} controls playsInline preload="metadata" />
-              ) : (
-                <div className={styles.outputEmpty}>
-                  {isGenerating ? (
-                    <>
-                      <div className={styles.loader} aria-hidden="true" />
-                      <p className={styles.outputEmptyTitle}>Generating</p>
-                    </>
-                  ) : creation?.status === 'failed' ? (
-                    <>
-                      <p className={styles.outputEmptyTitle}>Failed</p>
-                      <span className={styles.outputEmptyText}>
-                        {creation.errorMessage || 'Try again.'}
-                      </span>
-                    </>
-                  ) : preset ? (
-                    <span className={styles.outputPlayBadge} aria-hidden="true">
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M8 5.14v13.72L19 12 8 5.14z" />
-                      </svg>
-                    </span>
-                  ) : (
-                    <p className={styles.outputEmptyTitle}>Preview</p>
-                  )}
-                </div>
-              )}
-            </div>
+            {showOutputMedia ? (
+              <div className={`${styles.outputMedia} ${previewAspectClass(aspectRatio)}`}>
+                {videoUrl ? (
+                  <video className={styles.previewVideo} src={videoUrl} controls playsInline preload="metadata" />
+                ) : (
+                  <div className={styles.outputEmpty}>
+                    {isGenerating ? (
+                      <>
+                        <div className={styles.loader} aria-hidden="true" />
+                        <p className={styles.outputEmptyTitle}>Generating</p>
+                      </>
+                    ) : creation?.status === 'failed' ? (
+                      <>
+                        <p className={styles.outputEmptyTitle}>Failed</p>
+                        <span className={styles.outputEmptyText}>
+                          {creation.errorMessage || 'Try again.'}
+                        </span>
+                      </>
+                    ) : !preset ? (
+                      <p className={styles.outputEmptyTitle}>Preview</p>
+                    ) : null}
+                  </div>
+                )}
+              </div>
+            ) : null}
 
             <div className={styles.outputGlass}>
               <div className={styles.outputGlassHeader}>
@@ -353,6 +369,9 @@ export default function CreateStudio({ preset = null, onBack }) {
                     <p className={styles.metaTime}>
                       {formatDistanceToNow(new Date(creation.createdAt), { addSuffix: true })}
                     </p>
+                  ) : null}
+                  {creation.status === 'failed' && !showOutputMedia ? (
+                    <p className={styles.outputEmptyText}>{creation.errorMessage || 'Try again.'}</p>
                   ) : null}
                   {creation.status === 'completed' ? (
                     <Link href="/explore" className={styles.exploreLink}>

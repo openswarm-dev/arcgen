@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import AuthButton from '../auth/AuthButton';
+import ConnectWallet from '../wallet/ConnectWallet';
 import BrandLogo from '../brand/BrandLogo';
 import MobileMenu from './MobileMenu';
 import { MenuIcon, SearchIcon } from './icons';
@@ -42,11 +42,11 @@ export default function Navbar() {
             </div>
 
             <div className={styles.actions}>
-              <Link href="/launch" className={styles.primaryButton}>
-                Launch
+              <Link href="/create" className={styles.primaryButton}>
+                Create
               </Link>
               <div className={styles.authSlot}>
-                <AuthButton />
+                <ConnectWallet />
               </div>
               <button
                 type="button"

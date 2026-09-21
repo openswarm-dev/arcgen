@@ -229,7 +229,7 @@
 }
 
 .accountLink:hover {
-  background: hsl(var(--background-hover) / 0.4);
+  background: transparent;
 }
 
 .accountAvatar {

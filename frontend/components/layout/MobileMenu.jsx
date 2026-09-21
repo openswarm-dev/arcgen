@@ -3,18 +3,14 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import AuthButton from '../auth/AuthButton';
+import ConnectWallet from '../wallet/ConnectWallet';
 import BrandLogo from '../brand/BrandLogo';
-import { useSupabase } from '../providers/SupabaseProvider';
 import { SearchIcon } from './icons';
 import { isNavItemActive, NAV_ITEMS } from './navItems';
 import styles from './MobileMenu.module.css';
 
 export default function MobileMenu({ open, onClose }) {
   const pathname = usePathname();
-  const { user } = useSupabase();
-  const accountName = user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'Guest';
-  const accountHandle = user?.email || 'Log in to continue';
 
   useEffect(() => {
     if (!open) return undefined;
@@ -105,19 +101,7 @@ export default function MobileMenu({ open, onClose }) {
         </nav>
 
         <div className={styles.footer}>
-          {!user ? (
-            <div onClick={onClose}>
-              <AuthButton variant="menu" />
-            </div>
-          ) : (
-            <Link href="/profile" className={styles.accountLink} onClick={onClose}>
-              <span className={styles.accountAvatar}>{(accountName || 'F').charAt(0).toUpperCase()}</span>
-              <span className={styles.accountMeta}>
-                <div className={styles.accountName}>{accountName}</div>
-                <div className={styles.accountHandle}>{accountHandle}</div>
-              </span>
-            </Link>
-          )}
+          <ConnectWallet variant="menu" />
         </div>
       </aside>
     </>

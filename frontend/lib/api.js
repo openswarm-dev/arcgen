@@ -24,32 +24,29 @@ export async function fetchWalletBalance(address) {
   return api(`/api/wallet/balance?address=${encodeURIComponent(address)}`);
 }
 
-export async function fetchProfile(query = {}) {
-  if (query.me && query.accessToken) {
-    return api('/api/profile/me', { accessToken: query.accessToken });
-  }
-
-  const params = new URLSearchParams();
-  if (query.wallet) params.set('wallet', query.wallet);
-  if (query.userId) params.set('userId', query.userId);
-  const suffix = params.toString() ? `?${params}` : '';
-  return api(`/api/profile${suffix}`);
-}
-
-export async function saveProfile(payload, accessToken) {
-  return api('/api/profile', {
-    method: 'PUT',
+export async function createVideoCreation(payload) {
+  return api('/api/creations', {
+    method: 'POST',
     body: JSON.stringify(payload),
-    accessToken,
   });
 }
 
-export async function fetchProfileSources(query = {}) {
-  const params = new URLSearchParams();
-  if (query.wallet) params.set('wallet', query.wallet);
-  if (query.userId) params.set('userId', query.userId);
-  const suffix = params.toString() ? `?${params}` : '';
-  return api(`/api/profile/sources${suffix}`);
+export async function fetchCreation(id) {
+  return api(`/api/creations/${encodeURIComponent(id)}`);
+}
+
+export async function fetchExploreCreations({ limit = 24, offset = 0 } = {}) {
+  const params = new URLSearchParams({ scope: 'explore', limit: String(limit), offset: String(offset) });
+  return api(`/api/creations?${params}`);
+}
+
+export async function fetchMyCreations(wallet, { limit = 12 } = {}) {
+  const params = new URLSearchParams({
+    scope: 'mine',
+    wallet,
+    limit: String(limit),
+  });
+  return api(`/api/creations?${params}`);
 }
 
 export async function registerAccount({ email, password, displayName }) {

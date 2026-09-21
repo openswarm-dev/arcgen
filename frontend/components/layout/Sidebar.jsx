@@ -3,11 +3,13 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useWallet } from '@solana/wallet-adapter-react';
 import { motion } from 'motion/react';
 import { CollapseIcon } from './icons';
 import { useLayout } from './LayoutContext';
 import { isNavItemActive, NAV_ITEMS } from './navItems';
-import { useSupabase } from '../providers/SupabaseProvider';
+import { truncateAddress } from '@/lib/wallet';
+import { useClientMounted } from '@/lib/useClientMounted';
 import BrandLogo from '../brand/BrandLogo';
 import styles from './Sidebar.module.css';
 
@@ -17,10 +19,12 @@ const EXPANDED_WIDTH = 275;
 export default function Sidebar() {
   const pathname = usePathname();
   const { collapsed, restoreSidebar, toggleCollapsed } = useLayout();
-  const { user } = useSupabase();
+  const { publicKey, connected, wallet } = useWallet();
+  const mounted = useClientMounted();
   const [wide, setWide] = useState(false);
-  const accountName = user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'Guest';
-  const accountHandle = user?.email || 'Not signed in';
+  const address = mounted && connected && publicKey ? publicKey.toBase58() : null;
+  const accountName = wallet?.adapter?.name || (address ? truncateAddress(address) : 'Guest');
+  const accountHandle = address ? truncateAddress(address, 6) : 'Connect wallet';
 
   useEffect(() => {
     const media = window.matchMedia('(min-width: 80rem)');
@@ -78,13 +82,13 @@ export default function Sidebar() {
           </nav>
         </div>
 
-        <Link href="/profile" aria-label="Open profile" data-sidenav-account="" className={styles.accountLink}>
+        <div data-sidenav-account="" className={styles.accountLink}>
           <span className={styles.accountAvatar}>{(accountName || 'F').charAt(0).toUpperCase()}</span>
           <span data-sidenav-label="" className={styles.accountMeta}>
             <span className={styles.accountName}>{accountName}</span>
             <span className={styles.accountHandle}>{accountHandle}</span>
           </span>
-        </Link>
+        </div>
       </div>
 
       <button

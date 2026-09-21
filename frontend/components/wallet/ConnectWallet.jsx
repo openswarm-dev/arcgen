@@ -11,6 +11,7 @@ import {
   prepareWalletConnect,
   truncateAddress
 } from '../../lib/wallet';
+import { useClientMounted } from '../../lib/useClientMounted';
 import styles from './ConnectWallet.module.css';
 
 function useClickOutside(ref, handler, active) {
@@ -31,6 +32,7 @@ function useClickOutside(ref, handler, active) {
 export default function ConnectWallet({ variant = 'navbar' }) {
   const rootRef = useRef(null);
   const { wallets, select, connect, disconnect, publicKey, connected, connecting, wallet } = useWallet();
+  const mounted = useClientMounted();
   const [menuOpen, setMenuOpen] = useState(false);
   const [connectOpen, setConnectOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -39,8 +41,8 @@ export default function ConnectWallet({ variant = 'navbar' }) {
   const [balanceError, setBalanceError] = useState(false);
   const [pendingWalletName, setPendingWalletName] = useState(null);
 
-  const address = connected && publicKey ? publicKey.toBase58() : null;
-  const isConnected = connected && Boolean(publicKey);
+  const address = mounted && connected && publicKey ? publicKey.toBase58() : null;
+  const isConnected = mounted && connected && Boolean(publicKey);
   const availableWallets = wallets.filter(
     w => w.readyState === WalletReadyState.Installed || w.readyState === WalletReadyState.Loadable
   );

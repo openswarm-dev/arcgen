@@ -1,0 +1,157 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  border: 1px solid hsl(var(--foreground) / 0.1);
+  border-radius: 1.25rem;
+  background: hsl(var(--background) / 0.32);
+  padding: 1.15rem 1.2rem 1.2rem;
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  box-shadow:
+    0 1px 0 hsl(var(--foreground) / 0.08) inset,
+    0 14px 32px hsl(0 0% 0% / 0.22);
+}
+
+.sectionHeading {
+  margin: 0 0 0.55rem;
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  color: hsl(var(--foreground));
+}
+
+.uploadSection {
+  display: flex;
+  flex-direction: column;
+}
+
+.uploadZone {
+  display: flex;
+  min-height: 7rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border: 1px dashed hsl(var(--foreground) / 0.18);
+  border-radius: 1rem;
+  background: hsl(var(--background) / 0.42);
+  padding: 1rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.uploadFilled {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.uploadThumb {
+  flex-shrink: 0;
+  overflow: hidden;
+  width: 250px;
+  height: 250px;
+  border: 1px solid hsl(var(--foreground) / 0.12);
+  border-radius: 0.85rem;
+  background: hsl(var(--background) / 0.42);
+  padding: 0;
+  cursor: pointer;
+}
+
+.uploadPreview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.uploadMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.changeButton,
+.clearButton {
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.changeButton {
+  color: hsl(var(--foreground));
+}
+
+.clearButton {
+  color: hsl(var(--muted-foreground));
+}
+
+.uploadZone:hover {
+  border-color: hsl(var(--foreground) / 0.28);
+  background: hsl(var(--background) / 0.5);
+}
+
+.uploadIcon {
+  font-size: 1.75rem;
+  font-weight: 300;
+  line-height: 1;
+  color: hsl(var(--foreground) / 0.55);
+}
+
+.uploadLabel {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: hsl(var(--foreground) / 0.72);
+}
+
+.fileInput {
+  display: none;
+}
+
+.clearButton:hover {
+  color: hsl(var(--foreground));
+}
+
+.controlSection {
+  display: flex;
+  flex-direction: column;
+}
+
+.optionRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.option {
+  min-width: 4.25rem;
+  border: 1px solid hsl(var(--foreground) / 0.1);
+  border-radius: 9999px;
+  background: hsl(var(--foreground) / 0.05);
+  padding: 0.55rem 0.95rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: hsl(var(--foreground) / 0.82);
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.option:hover {
+  border-color: hsl(var(--foreground) / 0.18);
+  background: hsl(var(--foreground) / 0.08);
+}
+
+.optionActive {
+  border-color: hsl(var(--foreground));
+  background: hsl(var(--foreground));
+  color: hsl(var(--background));
+}
+
+@media (min-width: 64rem) {
+  .sectionHeading {
+    font-size: 1.2rem;
+  }
+}

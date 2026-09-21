@@ -1,4 +1,4 @@
-export const APP_NAME = 'F33D';
+export const APP_NAME = 'ArcGen';
 export const LOGO_SRC = '/logo/FeedLogo1.png';
 
 export default function BrandLogo({ className, alt = APP_NAME }) {

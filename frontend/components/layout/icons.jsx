@@ -14,14 +14,6 @@ export function HomeIcon({ className }) {
   );
 }
 
-export function ProfileIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" className={className}>
-      <path d="M12 3.5a4.25 4.25 0 100 8.5 4.25 4.25 0 000-8.5zM4.75 19.15C5.2 16.18 8.2 14 12 14s6.8 2.18 7.25 5.15c.07.48.12.9.12 1.35H4.63c0-.45.05-.87.12-1.35z" />
-    </svg>
-  );
-}
-
 export function SearchIcon({ className }) {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" className={className}>
@@ -34,33 +26,10 @@ export function ExploreIcon({ className }) {
   return <SearchIcon className={className} />;
 }
 
-export function PaymentsIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" className={className}>
-      <path
-        clipRule="evenodd"
-        d="M16.161 3.55h4.117l-1.924 6.416c1.283 1.091 2.098 2.717 2.098 4.534 0 3.286-2.664 5.95-5.95 5.95h-.22l-.5 2.5h-6.44l.5-2.5H3.227l2.033-6.781C4.204 12.595 3.552 11.124 3.552 9.5c0-3.286 2.664-5.95 5.95-5.95h.22l.5-2.5h6.44z"
-      />
-    </svg>
-  );
-}
-
 export function ComponentsIcon({ className }) {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" className={className}>
       <path d="M3 3h8v8H3V3zm10 0h8v8h-8V3zM3 13h8v8H3v-8zm10 0h8v8h-8v-8z" />
-    </svg>
-  );
-}
-
-export function AnalyticsIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" className={className}>
-      <path
-        fillRule="evenodd"
-        d="M6 3h12c1.657 0 3 1.343 3 3v12c0 1.657-1.343 3-3 3H6c-1.657 0-3-1.343-3-3V6c0-1.657 1.343-3 3-3zM6 5h12c.552 0 1 .448 1 1v12c0 .552-.448 1-1 1H6c-.552 0-1-.448-1-1V6c0-.552.448-1 1-1z"
-      />
-      <path d="M7 13h2.2v4.2H7zM10.9 9.4h2.2v7.8h-2.2zM14.8 11.4h2.2v5.8h-2.2z" />
     </svg>
   );
 }
@@ -73,19 +42,6 @@ export function LaunchIcon({ className }) {
         clipRule="evenodd"
         d="M21.002 5.611c0 2.689-1.085 5.259-3 7.137v4.01c0 1.06-.422 2.078-1.172 2.828l-4.265 4.266-1.937-5.812-4.667-4.667-5.81-1.935 4.265-4.266C5.166 6.422 6.183 6 7.244 6h4.01c1.878-1.915 4.448-3 7.137-3h2.611v2.611z"
       />
-    </svg>
-  );
-}
-
-export function CapitalFlowIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" className={className}>
-      <path
-        stroke="currentColor"
-        strokeWidth="1.5"
-        d="M13.5 3h-3C9.408 5.913 8.024 6.711 4.956 6.201l-1.5 2.598c1.976 2.402 1.976 4 0 6.402l1.5 2.598c3.068-.51 4.452.288 5.544 3.201h3c1.092-2.913 2.476-3.711 5.544-3.2l1.5-2.599c-1.976-2.402-1.976-4 0-6.402l-1.5-2.598c-3.068.51-4.452-.288-5.544-3.201Z"
-      />
-      <circle cx="12" cy="12" r="2.5" fill="currentColor" />
     </svg>
   );
 }

@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
 
 import { useAuthOverlay } from '@/components/providers/AuthOverlayProvider';
 import { useSupabase } from '@/components/providers/SupabaseProvider';
@@ -85,9 +84,6 @@ export default function AuthButton({ variant = 'navbar' }) {
             <div className={styles.email}>{user.email}</div>
           </div>
           <div className={styles.menuBody}>
-            <Link href="/profile" className={styles.menuItem} onClick={() => setMenuOpen(false)}>
-              Profile
-            </Link>
             <button type="button" className={`${styles.menuItem} ${styles.menuItemDanger}`} onClick={handleSignOut}>
               Log out
             </button>

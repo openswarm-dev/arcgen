@@ -1,0 +1,84 @@
+services:
+  - type: web
+    name: arcgen-server
+    runtime: node
+    plan: starter
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: RENDER
+        value: "true"
+      - key: OPENROUTER_APP_NAME
+        value: ArcGen
+      - key: PUBLIC_API_URL
+        fromService:
+          type: web
+          name: arcgen-server
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: FRONTEND_URL
+        fromService:
+          type: web
+          name: arcgen-frontend
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: OPENROUTER_SITE_URL
+        fromService:
+          type: web
+          name: arcgen-frontend
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: DASHSCOPE_API_KEY
+        sync: false
+      - key: HELIUS_RPC_URL
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM
+        sync: false
+
+  - type: web
+    name: arcgen-frontend
+    runtime: node
+    plan: starter
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: arcgen-server
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        sync: false
+
+  - type: cron
+    name: arcgen-keepalive
+    runtime: node
+    schedule: "*/5 * * * *"
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node lib/keepalive.js
+    envVars:
+      - key: FRONTEND_URL
+        fromService:
+          type: web
+          name: arcgen-frontend
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: SERVER_PUBLIC_URL
+        fromService:
+          type: web
+          name: arcgen-server
+          envVarKey: RENDER_EXTERNAL_URL

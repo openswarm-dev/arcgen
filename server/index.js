@@ -13,12 +13,26 @@ import {
 import { getProfileSources } from './lib/sources.js';
 import { getWalletBalance, isValidSolanaAddress } from './wallet.js';
 import { startKeepalive } from './lib/keepalive.js';
+import {
+  createCreation,
+  creationStoreMode,
+  getCreationById,
+  listExploreCreations,
+  listWalletCreations,
+  readLocalCreationVideo,
+  readLocalCreationReference,
+  readLocalCreationReferenceVideo,
+  readLocalCreationReferenceImage,
+} from './lib/creations.js';
+import { isDashScopeConfigured } from './lib/dashscope.js';
+import { isOpenRouterConfigured } from './lib/openrouter.js';
+import { queueCreationGeneration } from './lib/generationWorker.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(cors());
-app.use(express.json({ limit: '6mb' }));
+app.use(express.json({ limit: '110mb' }));
 
 app.get('/api/health', async (_req, res) => {
   const health = {
@@ -33,6 +47,15 @@ app.get('/api/health', async (_req, res) => {
     },
     resend: {
       configured: Boolean(process.env.RESEND_API_KEY),
+    },
+    openrouter: {
+      configured: isOpenRouterConfigured(),
+    },
+    dashscope: {
+      configured: isDashScopeConfigured(),
+    },
+    creations: {
+      store: creationStoreMode(),
     },
   };
 
@@ -201,6 +224,139 @@ app.get('/api/profile/sources', async (req, res) => {
   } catch (error) {
     console.error('Profile sources fetch failed:', error);
     return res.status(error.status || 500).json({ error: error.message || 'Failed to load sources' });
+  }
+});
+
+app.post('/api/creations', async (req, res) => {
+  try {
+    if (!isOpenRouterConfigured() && !isDashScopeConfigured()) {
+      return res.status(503).json({ error: 'Video generation is not configured yet' });
+    }
+
+    const inputMode = req.body?.inputMode || 'simple';
+    if (inputMode === 'swap' && !isDashScopeConfigured()) {
+      return res.status(503).json({ error: 'Character swap requires DashScope configuration' });
+    }
+    if (inputMode !== 'swap' && !isOpenRouterConfigured()) {
+      return res.status(503).json({ error: 'Video generation is not configured yet' });
+    }
+
+    const creation = await createCreation({
+      wallet: req.body?.wallet,
+      prompt: req.body?.prompt,
+      title: req.body?.title,
+      duration: req.body?.duration,
+      resolution: req.body?.resolution,
+      aspectRatio: req.body?.aspectRatio,
+      model: req.body?.model,
+      inputMode,
+      characterImage: req.body?.characterImage,
+      characterImageA: req.body?.characterImageA,
+      characterImageB: req.body?.characterImageB,
+      referenceVideo: req.body?.referenceVideo,
+    });
+
+    queueCreationGeneration(creation.id);
+    return res.status(202).json(creation);
+  } catch (error) {
+    console.error('Create generation failed:', error);
+    return res.status(error.status || 500).json({ error: error.message || 'Could not start generation' });
+  }
+});
+
+app.get('/api/creations', async (req, res) => {
+  try {
+    const scope = req.query.scope || 'explore';
+    const limit = Math.min(Number(req.query.limit) || 24, 48);
+    const offset = Math.max(Number(req.query.offset) || 0, 0);
+
+    if (scope === 'mine') {
+      const wallet = req.query.wallet;
+      if (!isValidSolanaAddress(wallet)) {
+        return res.status(400).json({ error: 'Connect your wallet to view your creations' });
+      }
+
+      const items = await listWalletCreations(wallet, { limit });
+      return res.json({ items });
+    }
+
+    const items = await listExploreCreations({ limit, offset });
+    return res.json({ items });
+  } catch (error) {
+    console.error('List creations failed:', error);
+    return res.status(error.status || 500).json({ error: error.message || 'Failed to load creations' });
+  }
+});
+
+app.get('/api/creations/:id', async (req, res) => {
+  try {
+    const creation = await getCreationById(req.params.id);
+    if (!creation) {
+      return res.status(404).json({ error: 'Creation not found' });
+    }
+
+    return res.json(creation);
+  } catch (error) {
+    console.error('Get creation failed:', error);
+    return res.status(error.status || 500).json({ error: error.message || 'Failed to load creation' });
+  }
+});
+
+app.get('/api/creations/:id/video', async (req, res) => {
+  try {
+    const creation = await getCreationById(req.params.id);
+    if (!creation?.videoUrl) {
+      return res.status(404).json({ error: 'Video not found' });
+    }
+
+    if (!creation.videoUrl.startsWith('/api/creations/')) {
+      return res.redirect(creation.videoUrl);
+    }
+
+    const buffer = await readLocalCreationVideo(req.params.id);
+    res.setHeader('Content-Type', 'video/mp4');
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    return res.send(buffer);
+  } catch (error) {
+    console.error('Serve creation video failed:', error);
+    return res.status(error.status || 500).json({ error: error.message || 'Failed to load video' });
+  }
+});
+
+app.get('/api/creations/:id/reference/video', async (req, res) => {
+  try {
+    const { buffer, contentType } = await readLocalCreationReferenceVideo(req.params.id);
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    return res.send(buffer);
+  } catch (error) {
+    console.error('Serve creation reference video failed:', error);
+    return res.status(error.status || 500).json({ error: error.message || 'Failed to load reference video' });
+  }
+});
+
+app.get('/api/creations/:id/reference/image/:index', async (req, res) => {
+  try {
+    const index = Math.max(Number(req.params.index) || 1, 1);
+    const { buffer, contentType } = await readLocalCreationReferenceImage(req.params.id, index);
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    return res.send(buffer);
+  } catch (error) {
+    console.error('Serve creation reference image failed:', error);
+    return res.status(error.status || 500).json({ error: error.message || 'Failed to load reference image' });
+  }
+});
+
+app.get('/api/creations/:id/reference', async (req, res) => {
+  try {
+    const { buffer, contentType } = await readLocalCreationReference(req.params.id);
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    return res.send(buffer);
+  } catch (error) {
+    console.error('Serve creation reference failed:', error);
+    return res.status(error.status || 500).json({ error: error.message || 'Failed to load reference image' });
   }
 });
 

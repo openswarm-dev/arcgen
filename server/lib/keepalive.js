@@ -1,13 +1,13 @@
 const INTERVAL_MS = 5 * 60 * 1000;
 
 function normalizeHealthUrl(value) {
-  if (!value) return 'https://arcgen-server.onrender.com/api/health';
+  if (!value) return 'https://insta-template-server.onrender.com/api/health';
   if (value.includes('/api/health')) return value;
   return `${value.replace(/\/$/, '')}/api/health`;
 }
 
 const TARGETS = [
-  process.env.FRONTEND_URL || 'https://arcgen-frontend.onrender.com/',
+  process.env.FRONTEND_URL || 'https://insta-template-frontend.onrender.com/',
   normalizeHealthUrl(process.env.SERVER_PUBLIC_URL || process.env.RENDER_EXTERNAL_URL),
 ];
 

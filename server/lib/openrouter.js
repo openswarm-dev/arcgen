@@ -2,6 +2,9 @@ import { normalizeWan3Params } from './wan3.js';
 
 const OPENROUTER_BASE = 'https://openrouter.ai/api/v1';
 export const DEFAULT_VIDEO_MODEL = process.env.OPENROUTER_VIDEO_MODEL || 'alibaba/wan-3.0';
+export const DEFAULT_SWAP_VIDEO_MODEL = process.env.OPENROUTER_SWAP_MODEL || 'bytedance/seedance-2.0';
+const SEEDANCE_MIN_DURATION = 4;
+const SEEDANCE_MAX_DURATION = 15;
 
 function getApiKey() {
   const key = process.env.OPENROUTER_API_KEY;
@@ -39,6 +42,15 @@ export function isOpenRouterConfigured() {
   return Boolean(process.env.OPENROUTER_API_KEY);
 }
 
+function normalizeDurationForModel(duration, model) {
+  const parsed = Number(duration);
+  if (String(model).includes('seedance')) {
+    return Math.min(SEEDANCE_MAX_DURATION, Math.max(SEEDANCE_MIN_DURATION, parsed || SEEDANCE_MIN_DURATION));
+  }
+
+  return normalizeWan3Params({ duration }).duration;
+}
+
 export async function submitVideoGeneration({
   prompt,
   model = DEFAULT_VIDEO_MODEL,
@@ -53,7 +65,7 @@ export async function submitVideoGeneration({
   const body = {
     model,
     prompt,
-    duration: normalized.duration,
+    duration: normalizeDurationForModel(normalized.duration, model),
     resolution: normalized.resolution,
     aspect_ratio: normalized.aspectRatio,
     generate_audio: generateAudio,

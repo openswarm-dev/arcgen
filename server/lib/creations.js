@@ -3,7 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import { isValidSolanaAddress } from '../wallet.js';
-import { DEFAULT_VIDEO_MODEL } from './openrouter.js';
+import { DEFAULT_SWAP_VIDEO_MODEL, DEFAULT_VIDEO_MODEL } from './openrouter.js';
 import { getSupabaseAdmin, isSupabaseConfigured } from './supabase.js';
 import { normalizeWan3Params } from './wan3.js';
 import {
@@ -120,27 +120,35 @@ export function creationStoreMode() {
   return isSupabaseConfigured() ? 'supabase' : 'file';
 }
 
-export function buildWanReferenceMedia(creation) {
-  const media = [];
+export function buildOpenRouterInputReferences(creation) {
+  const refs = [];
 
   if (creation.referenceVideoUrl) {
-    media.push({ type: 'reference_video', url: creation.referenceVideoUrl });
+    refs.push({
+      type: 'video_url',
+      video_url: { url: creation.referenceVideoUrl },
+    });
   }
 
-  const imageUrls = (creation.referenceMedia || [])
+  const imageRefs = (creation.referenceMedia || [])
     .filter(item => item.type === 'reference_image')
-    .map(item => item.url)
-    .filter(Boolean);
+    .sort((a, b) => (a.index || 0) - (b.index || 0));
 
-  if (!imageUrls.length && creation.referenceImageUrl) {
-    imageUrls.push(creation.referenceImageUrl);
+  for (const item of imageRefs) {
+    refs.push({
+      type: 'image_url',
+      image_url: { url: item.url },
+    });
   }
 
-  for (const url of imageUrls) {
-    media.push({ type: 'reference_image', url });
+  if (!imageRefs.length && creation.referenceImageUrl) {
+    refs.push({
+      type: 'image_url',
+      image_url: { url: creation.referenceImageUrl },
+    });
   }
 
-  return media;
+  return refs;
 }
 
 async function persistReferenceFile(id, kind, buffer, contentType, index = null) {
@@ -249,7 +257,8 @@ export async function createCreation({
       { type: 'reference_image', url: imageAUrl, index: 1 },
       { type: 'reference_image', url: imageBUrl, index: 2 },
     ];
-    row.provider = 'dashscope';
+    row.model = DEFAULT_SWAP_VIDEO_MODEL;
+    row.provider = 'openrouter';
   } else {
     const image = parseDataImage(characterImage);
     if (!image) {

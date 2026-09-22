@@ -35,6 +35,12 @@ services:
         sync: false
       - key: OPENROUTER_API_KEY
         sync: false
+      - key: WAVESPEED_API_KEY
+        sync: false
+      - key: WAVESPEED_VIDEO_MODEL
+        sync: false
+      - key: WAVESPEED_DISABLE_SAFETY_CHECKER
+        value: "true"
       - key: ATLASCLOUD_API_KEY
         sync: false
       - key: HELIUS_RPC_URL

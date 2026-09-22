@@ -276,8 +276,13 @@ export async function createCreation({
       { type: 'reference_image', url: imageAUrl, index: 1 },
       { type: 'reference_image', url: imageBUrl, index: 2 },
     ];
-    row.model = process.env.ATLASCLOUD_VIDEO_MODEL || 'alibaba/wan-3.0/reference-to-video';
-    row.provider = 'atlascloud';
+    if (process.env.WAVESPEED_API_KEY) {
+      row.model = process.env.WAVESPEED_VIDEO_MODEL || 'bytedance/seedance-2.0-fast/video-edit';
+      row.provider = 'wavespeed';
+    } else {
+      row.model = process.env.ATLASCLOUD_VIDEO_MODEL || 'alibaba/wan-3.0/reference-to-video';
+      row.provider = 'atlascloud';
+    }
   } else {
     const image = parseDataImage(characterImage);
     if (!image) {

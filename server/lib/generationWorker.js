@@ -18,6 +18,14 @@ import {
   submitVideoGeneration,
 } from './openrouter.js';
 import { isLocalhostUrl } from './publicUrl.js';
+import {
+  buildWaveSpeedReferenceImages,
+  downloadWaveSpeedVideo,
+  isWaveSpeedConfigured,
+  isWaveSpeedFailureStatus,
+  pollWaveSpeedPrediction,
+  submitSeedanceVideoEdit,
+} from './wavespeed.js';
 
 const POLL_INTERVAL_MS = 12_000;
 const MAX_POLL_ATTEMPTS = 45;
@@ -35,6 +43,75 @@ function assertPublicReferenceUrls(references) {
       );
     }
   }
+}
+
+function assertPublicUrls(urls) {
+  assertPublicReferenceUrls(urls.map(url => ({ url })));
+}
+
+async function runWaveSpeedGeneration(creationId, creation) {
+  if (!isWaveSpeedConfigured()) {
+    throw new Error('Character swap requires WaveSpeed. Add WAVESPEED_API_KEY on the server.');
+  }
+
+  if (!creation.referenceVideoUrl) {
+    throw new Error('Missing reference video for swap generation');
+  }
+
+  const referenceImages = buildWaveSpeedReferenceImages(creation);
+  if (referenceImages.length < 2) {
+    throw new Error('Missing character photos for swap generation');
+  }
+
+  assertPublicUrls([creation.referenceVideoUrl, ...referenceImages]);
+
+  const job = await submitSeedanceVideoEdit({
+    prompt: creation.prompt,
+    video: creation.referenceVideoUrl,
+    referenceImages,
+    duration: creation.duration,
+    resolution: creation.resolution,
+    aspectRatio: creation.aspectRatio,
+    generateAudio: true,
+  });
+
+  await updateCreation(creationId, {
+    status: 'processing',
+    providerJobId: job.predictionId,
+  });
+
+  for (let attempt = 0; attempt < MAX_POLL_ATTEMPTS; attempt += 1) {
+    if (attempt > 0) {
+      await sleep(POLL_INTERVAL_MS);
+    }
+
+    const latest = await pollWaveSpeedPrediction(job.predictionId);
+    const taskStatus = latest?.status;
+
+    if (isWaveSpeedFailureStatus(taskStatus)) {
+      throw new Error(latest?.error || `Generation ${taskStatus}`);
+    }
+
+    if (taskStatus === 'completed') {
+      const outputUrl = latest?.outputs?.[0];
+      if (!outputUrl || typeof outputUrl !== 'string') {
+        throw new Error('WaveSpeed completed without a video URL');
+      }
+
+      const { buffer, contentType } = await downloadWaveSpeedVideo(outputUrl);
+      const videoUrl = await persistCreationVideo(creationId, buffer, contentType);
+
+      await updateCreation(creationId, {
+        status: 'completed',
+        videoUrl,
+        errorMessage: null,
+        completedAt: new Date().toISOString(),
+      });
+      return;
+    }
+  }
+
+  throw new Error('Video generation timed out. Try again in a moment.');
 }
 
 async function runAtlasCloudGeneration(creationId, creation) {
@@ -153,9 +230,10 @@ async function runOpenRouterGeneration(creationId, creation) {
   throw new Error('Video generation timed out. Try again in a moment.');
 }
 
-function usesAtlasCloud(creation) {
+function usesSwapGeneration(creation) {
   return (
     creation.inputMode === 'swap' ||
+    creation.provider === 'wavespeed' ||
     creation.provider === 'atlascloud' ||
     creation.provider === 'dashscope'
   );
@@ -168,9 +246,18 @@ export async function runCreationGeneration(creationId) {
   }
 
   try {
-    if (usesAtlasCloud(creation)) {
-      await runAtlasCloudGeneration(creationId, creation);
-      return;
+    if (usesSwapGeneration(creation)) {
+      if (isWaveSpeedConfigured()) {
+        await runWaveSpeedGeneration(creationId, creation);
+        return;
+      }
+
+      if (isAtlasCloudConfigured()) {
+        await runAtlasCloudGeneration(creationId, creation);
+        return;
+      }
+
+      throw new Error('Character swap requires WaveSpeed or Atlas Cloud. Add WAVESPEED_API_KEY on the server.');
     }
 
     if (!isOpenRouterConfigured()) {

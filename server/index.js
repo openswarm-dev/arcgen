@@ -26,6 +26,7 @@ import {
   readLocalCreationReferenceImage,
 } from './lib/creations.js';
 import { isAtlasCloudConfigured } from './lib/atlascloud.js';
+import { isSwapVideoConfigured, isWaveSpeedConfigured } from './lib/wavespeed.js';
 import { isOpenRouterConfigured } from './lib/openrouter.js';
 import { queueCreationGeneration } from './lib/generationWorker.js';
 import { readPresetReferenceVideo } from './lib/presets.js';
@@ -53,6 +54,9 @@ app.get('/api/health', async (_req, res) => {
     },
     openrouter: {
       configured: isOpenRouterConfigured(),
+    },
+    wavespeed: {
+      configured: isWaveSpeedConfigured(),
     },
     atlascloud: {
       configured: isAtlasCloudConfigured(),
@@ -251,14 +255,14 @@ app.get('/api/profile/sources', async (req, res) => {
 
 app.post('/api/creations', async (req, res) => {
   try {
-    if (!isOpenRouterConfigured() && !isAtlasCloudConfigured()) {
+    if (!isOpenRouterConfigured() && !isSwapVideoConfigured()) {
       return res.status(503).json({ error: 'Video generation is not configured yet' });
     }
 
     const inputMode = req.body?.inputMode || 'simple';
-    if (inputMode === 'swap' && !isAtlasCloudConfigured()) {
+    if (inputMode === 'swap' && !isSwapVideoConfigured()) {
       return res.status(503).json({
-        error: 'Character swap requires Atlas Cloud. Add ATLASCLOUD_API_KEY on the server.',
+        error: 'Character swap requires WaveSpeed or Atlas Cloud. Add WAVESPEED_API_KEY on the server.',
       });
     }
     if (inputMode !== 'swap' && !isOpenRouterConfigured()) {

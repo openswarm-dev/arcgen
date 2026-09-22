@@ -1,5 +1,5 @@
 const BASE_URL = 'https://api.wavespeed.ai';
-const DEFAULT_VIDEO_MODEL = 'bytedance/seedance-2.0-fast/video-edit';
+const DEFAULT_VIDEO_MODEL = 'alibaba/wan-3.0-prime/image-to-video-spicy';
 const TERMINAL_FAILURE_STATUSES = new Set(['failed', 'cancelled', 'timeout', 'deleted']);
 
 function getApiKey() {
@@ -14,8 +14,12 @@ function getVideoModelPath() {
   return (process.env.WAVESPEED_VIDEO_MODEL || DEFAULT_VIDEO_MODEL).replace(/^\/+|\/+$/g, '');
 }
 
-function shouldDisableSafetyChecker() {
-  return process.env.WAVESPEED_DISABLE_SAFETY_CHECKER !== 'false';
+function shouldEnablePromptExpansion() {
+  return process.env.WAVESPEED_ENABLE_PROMPT_EXPANSION === 'true';
+}
+
+function shouldEnableAudio() {
+  return process.env.WAVESPEED_ENABLE_AUDIO !== 'false';
 }
 
 function authHeaders(contentType = 'application/json') {
@@ -71,29 +75,41 @@ export function buildWaveSpeedReferenceImages(creation) {
   return images;
 }
 
-export async function submitSeedanceVideoEdit({
+export async function submitWanImageToVideoSpicy({
   prompt,
-  video,
-  referenceImages = [],
-  duration = 15,
+  image,
+  lastImage,
+  duration = 5,
   resolution = '720p',
   aspectRatio = '9:16',
-  generateAudio = true,
+  enablePromptExpansion = shouldEnablePromptExpansion(),
+  enableAudio = shouldEnableAudio(),
+  seed,
   modelPath = getVideoModelPath(),
 }) {
+  if (!image) {
+    throw Object.assign(new Error('WaveSpeed image-to-video requires a first-frame image'), { status: 400 });
+  }
+
   const body = {
-    prompt,
-    video,
-    aspect_ratio: aspectRatio,
+    image,
     resolution,
+    aspect_ratio: aspectRatio,
     duration,
-    generate_audio: generateAudio,
-    enable_web_search: false,
-    disable_safety_checker: shouldDisableSafetyChecker(),
+    enable_prompt_expansion: enablePromptExpansion,
+    enable_audio: enableAudio,
   };
 
-  if (referenceImages.length) {
-    body.reference_images = referenceImages;
+  if (prompt) {
+    body.prompt = prompt;
+  }
+
+  if (lastImage) {
+    body.last_image = lastImage;
+  }
+
+  if (seed !== undefined && seed !== null) {
+    body.seed = seed;
   }
 
   const response = await fetch(`${BASE_URL}/api/v3/${modelPath}`, {

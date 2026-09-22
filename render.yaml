@@ -38,8 +38,8 @@ services:
       - key: WAVESPEED_API_KEY
         sync: false
       - key: WAVESPEED_VIDEO_MODEL
-        sync: false
-      - key: WAVESPEED_DISABLE_SAFETY_CHECKER
+        value: alibaba/wan-3.0-prime/image-to-video-spicy
+      - key: WAVESPEED_ENABLE_AUDIO
         value: "true"
       - key: ATLASCLOUD_API_KEY
         sync: false

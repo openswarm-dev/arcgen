@@ -24,7 +24,7 @@ import {
   isWaveSpeedConfigured,
   isWaveSpeedFailureStatus,
   pollWaveSpeedPrediction,
-  submitSeedanceVideoEdit,
+  submitWanImageToVideoSpicy,
 } from './wavespeed.js';
 
 const POLL_INTERVAL_MS = 12_000;
@@ -54,25 +54,20 @@ async function runWaveSpeedGeneration(creationId, creation) {
     throw new Error('Character swap requires WaveSpeed. Add WAVESPEED_API_KEY on the server.');
   }
 
-  if (!creation.referenceVideoUrl) {
-    throw new Error('Missing reference video for swap generation');
-  }
-
   const referenceImages = buildWaveSpeedReferenceImages(creation);
   if (referenceImages.length < 2) {
     throw new Error('Missing character photos for swap generation');
   }
 
-  assertPublicUrls([creation.referenceVideoUrl, ...referenceImages]);
+  assertPublicUrls(referenceImages);
 
-  const job = await submitSeedanceVideoEdit({
+  const job = await submitWanImageToVideoSpicy({
     prompt: creation.prompt,
-    video: creation.referenceVideoUrl,
-    referenceImages,
+    image: referenceImages[0],
+    lastImage: referenceImages[1],
     duration: creation.duration,
     resolution: creation.resolution,
     aspectRatio: creation.aspectRatio,
-    generateAudio: true,
   });
 
   await updateCreation(creationId, {

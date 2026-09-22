@@ -277,7 +277,8 @@ export async function createCreation({
       { type: 'reference_image', url: imageBUrl, index: 2 },
     ];
     if (process.env.WAVESPEED_API_KEY) {
-      row.model = process.env.WAVESPEED_VIDEO_MODEL || 'bytedance/seedance-2.0-fast/video-edit';
+      row.model =
+        process.env.WAVESPEED_VIDEO_MODEL || 'alibaba/wan-3.0-prime/image-to-video-spicy';
       row.provider = 'wavespeed';
     } else {
       row.model = process.env.ATLASCLOUD_VIDEO_MODEL || 'alibaba/wan-3.0/reference-to-video';
